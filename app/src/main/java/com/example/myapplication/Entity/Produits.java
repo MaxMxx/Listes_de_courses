@@ -15,15 +15,19 @@ public class Produits {
     @DatabaseField( columnName="prix")
     private float prix;
 
+    @DatabaseField( columnName="image")
+    private String image;
+
     @DatabaseField( canBeNull = false, foreign = true, foreignColumnName = "idQuantite", foreignAutoCreate = true )
     private Quantite quantite;
 
     public Produits() {
     }
 
-    public Produits(String libelle, float prix, Quantite quantite) {
+    public Produits(String libelle, float prix, String image, Quantite quantite) {
         this.libelle = libelle;
         this.prix = prix;
+        this.image = image;
         this.quantite = quantite;
     }
 
@@ -49,6 +53,14 @@ public class Produits {
 
     public void setPrix(float prix) {
         this.prix = prix;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public Quantite getQuantite() {
