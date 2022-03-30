@@ -4,12 +4,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.myapplication.Entity.Listes;
+import com.example.myapplication.Entity.Quantite;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-
-import Entity.Client;
-import Entity.Ville;
 
 public class DataBaseLinker extends OrmLiteSqliteOpenHelper {
 
@@ -23,8 +22,8 @@ public class DataBaseLinker extends OrmLiteSqliteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
-            TableUtils.createTable( connectionSource, Client.class );
-            TableUtils.createTable( connectionSource, Ville.class );
+            TableUtils.createTable( connectionSource, Listes.class );
+            TableUtils.createTable( connectionSource, Quantite.class );
 
             Log.i( "DATABASE", "onCreate invoked" );
         } catch( Exception exception ) {
