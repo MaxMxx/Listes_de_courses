@@ -18,13 +18,13 @@ public class Produits {
     @DatabaseField( columnName="image")
     private String image;
 
-    @DatabaseField( canBeNull = false, foreign = true, foreignColumnName = "idQuantite", foreignAutoCreate = true )
-    private Quantite quantite;
+    @DatabaseField( columnName="quantite")
+    private int quantite;
 
     public Produits() {
     }
 
-    public Produits(String libelle, float prix, String image, Quantite quantite) {
+    public Produits(String libelle, float prix, String image, int quantite) {
         this.libelle = libelle;
         this.prix = prix;
         this.image = image;
@@ -63,11 +63,11 @@ public class Produits {
         this.image = image;
     }
 
-    public Quantite getQuantite() {
+    public int getQuantite() {
         return quantite;
     }
 
-    public void setQuantite(Quantite quantite) {
+    public void setQuantite(int quantite) {
         this.quantite = quantite;
     }
 }
