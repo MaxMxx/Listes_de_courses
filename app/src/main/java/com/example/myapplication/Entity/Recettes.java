@@ -23,6 +23,7 @@ public class Recettes {
         this.produit = produit;
     }
 
+
     public int getIdRecette() {
         return idRecette;
     }
