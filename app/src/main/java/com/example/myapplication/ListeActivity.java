@@ -63,12 +63,12 @@ public class ListeActivity extends AppCompatActivity {
                         TableRow.LayoutParams.WRAP_CONTENT,
                         4f
                 );
-                Produits p = new Produits ;
+                /*Produits p = new Produits ;
                 TextView labelNom = new TextView(this);
                 labelNom.setLayoutParams(param);
                 labelNom.setText(liste.getProduit());
                 row.addView(labelNom);
-                containerListe.addView(row);
+                containerListe.addView(row);*/
 
 
 

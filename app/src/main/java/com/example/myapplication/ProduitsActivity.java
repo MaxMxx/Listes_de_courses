@@ -31,26 +31,7 @@ public class ProduitsActivity extends AppCompatActivity {
         setContentView(R.layout.produits_main);
         produitsTableLayout = findViewById(R.id.produitsTableLayout);
 
-        this.deleteDatabase("listeDeCourses.db");
-
-        createData();
-
         getProduits();
-    }
-
-    public void createData() {
-        DataBaseLinker linker = new DataBaseLinker(this);
-        try {
-            Dao<Produits, Integer> daoProduits = linker.getDao( Produits.class );
-            Produits produits = new Produits();
-            produits.setLibelle("Frommage");
-            produits.setQuantite(5);
-            produits.setPrix(12);
-            daoProduits.create(produits);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        linker.close();
     }
 
     public void getProduits() {
@@ -101,10 +82,7 @@ public class ProduitsActivity extends AppCompatActivity {
         }
         linker.close();
     }
-<<<<<<< Updated upstream
-}
 
-=======
 
     public void editProduit(int idProduit, TableRow tableRowProduit) {
 
@@ -129,4 +107,3 @@ public class ProduitsActivity extends AppCompatActivity {
         linker.close();*/
     }
 }
->>>>>>> Stashed changes
