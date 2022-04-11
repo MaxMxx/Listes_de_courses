@@ -5,35 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabItem"
-        android:layout_width="384dp"
-        android:layout_height="47dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.481"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023">
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/Produits"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Produits" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/Recettes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Recettes" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/Listes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="LISTE DE COURSE" />
-    </com.google.android.material.tabs.TabLayout>
 
     <EditText
         android:id="@+id/editTextTextPersonName"
@@ -57,6 +28,47 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName">
+    </TableLayout>
+
+    <TableLayout
+        android:layout_width="385dp"
+        android:layout_height="59dp"
+        android:layout_marginBottom="1dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/buttonMain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Main" />
+
+            <Button
+                android:id="@+id/buttonProduits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Produits" />
+
+            <Button
+                android:id="@+id/buttonRecettes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recettes" />
+
+            <Button
+                android:id="@+id/buttonListe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Liste" />
+        </TableRow>
     </TableLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

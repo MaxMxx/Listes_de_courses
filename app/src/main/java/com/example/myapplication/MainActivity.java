@@ -3,6 +3,7 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -17,20 +18,27 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.Entity.Listes;
 import com.example.myapplication.Entity.Produits;
+import com.example.myapplication.Entity.Recettes;
 import com.google.android.material.snackbar.Snackbar;
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+
+    private ArrayList<Produits> listeProduitsChoice = new ArrayList<Produits>();
+
     private TableLayout tablayoutSearch;
-    private com.google.android.material.tabs.TabItem Produits;
-    private com.google.android.material.tabs.TabItem Recettes;
-    private com.google.android.material.tabs.TabItem Listes;
+    private Button buttonMain;
+    private Button buttonProduits;
+    private Button buttonRecettes;
+    private Button buttonListe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,28 +57,41 @@ public class MainActivity extends AppCompatActivity {
 
     public void getMenuSwitch() {
 
-        Produits = findViewById(R.id.Produits);
-        Recettes = findViewById(R.id.Recettes);
-        Listes = findViewById(R.id.Listes);
-
-        Produits.setOnClickListener(new View.OnClickListener() {
+        /*
+        buttonMain = findViewById(R.id.buttonMain);
+        buttonMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "onClick: A cliqué sur Produits");
+                Intent monIntent = new Intent(FirstActivity.this, SecondActivity.class);
+                startActivity(monIntent);
+            }
+        });
+        */
+
+        buttonProduits = findViewById(R.id.buttonProduits);
+        buttonProduits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent monIntent = new Intent(MainActivity.this, ProduitsActivity.class);
+                startActivity(monIntent);
             }
         });
 
-        Recettes.setOnClickListener(new View.OnClickListener() {
+        buttonRecettes = findViewById(R.id.buttonRecettes);
+        buttonRecettes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "onClick: A cliqué sur Recettes");
+                Intent monIntent = new Intent(MainActivity.this, ProduitsActivity.class);
+                startActivity(monIntent);
             }
         });
 
-        Listes.setOnClickListener(new View.OnClickListener() {
+        buttonListe = findViewById(R.id.buttonListe);
+        buttonListe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "onClick: A cliqué sur Listes");
+                Intent monIntent = new Intent(MainActivity.this, ListeActivity.class);
+                startActivity(monIntent);
             }
         });
 
@@ -84,13 +105,11 @@ public class MainActivity extends AppCompatActivity {
             Produits produits = new Produits();
             produits.setLibelle("Frommage");
             produits.setQuantite(5);
-            produits.setPrix(12);
             daoProduits.create(produits);
 
             Produits produits2 = new Produits();
-            produits.setLibelle("Patate");
-            produits.setQuantite(4);
-            produits.setPrix(12);
+            produits2.setLibelle("Patate");
+            produits2.setQuantite(4);
             daoProduits.create(produits2);
 
         } catch (SQLException throwables) {
@@ -114,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 TextView value = new TextView(this);
-                value.setText(produit.getLibelle()+" | "+produit.getPrix()+"€ | "+produit.getQuantite());
+                value.setText(produit.getLibelle()+" | "+produit.getQuantite());
                 value.setTextSize(20);
 
                 int idProduit = produit.getIdProduit();
@@ -140,22 +159,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addProduitCheck(int idProduit) {
-        /*DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(this);
         try {
 
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
+            Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);
+            Dao<Recettes, Integer> daoRecettes = linker.getDao(Recettes.class);
 
             Produits produit = daoProduits.queryForId(idProduit);
             if (produit != null) {
-                daoProduits.delete(produit);
-                produitsTableLayout.removeView(tableRowProduit);
+                listeProduitsChoice.add(produit);
+
+                Listes listes = new Listes();
+                listes.setProduit(produit);
+                daoListes.create(listes);
 
             }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        linker.close();*/
+        linker.close();
     }
 
 }

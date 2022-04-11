@@ -9,9 +9,6 @@ public class Listes {
     @DatabaseField( columnName = "idListe", generatedId = true )
     private int idListe;
 
-    @DatabaseField( columnName="idLaListe")
-    private int idLaListe;
-
     @DatabaseField( columnName="quantite")
     private int quantite;
 
@@ -24,8 +21,7 @@ public class Listes {
     public Listes() {
     }
 
-    public Listes(int idLaListe, Recettes recette, Produits produit, int quantite) {
-        this.idLaListe = idLaListe;
+    public Listes(Recettes recette, Produits produit, int quantite) {
         this.recette = recette;
         this.produit = produit;
         this.quantite = quantite;
@@ -37,14 +33,6 @@ public class Listes {
 
     public void setIdListe(int idListe) {
         this.idListe = idListe;
-    }
-
-    public int getIdLaListe() {
-        return idLaListe;
-    }
-
-    public void setIdLaListe(int idLaListe) {
-        this.idLaListe = idLaListe;
     }
 
     public Recettes getRecette() {

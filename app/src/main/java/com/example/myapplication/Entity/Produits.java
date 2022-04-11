@@ -12,22 +12,14 @@ public class Produits {
     @DatabaseField( columnName="libelle")
     private String libelle;
 
-    @DatabaseField( columnName="prix")
-    private float prix;
-
-    @DatabaseField( columnName="image")
-    private String image;
-
     @DatabaseField( columnName="quantite")
     private int quantite;
 
     public Produits() {
     }
 
-    public Produits(String libelle, float prix, String image, int quantite) {
+    public Produits(String libelle, int quantite) {
         this.libelle = libelle;
-        this.prix = prix;
-        this.image = image;
         this.quantite = quantite;
     }
 
@@ -45,22 +37,6 @@ public class Produits {
 
     public void setLibelle(String libelle) {
         this.libelle = libelle;
-    }
-
-    public float getPrix() {
-        return prix;
-    }
-
-    public void setPrix(float prix) {
-        this.prix = prix;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 
     public int getQuantite() {
