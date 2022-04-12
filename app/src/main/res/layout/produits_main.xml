@@ -7,12 +7,69 @@
     tools:context=".ProduitsActivity">
 
     <TableLayout
-        android:id="@+id/produitsTableLayout"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp"
-        android:layout_gravity="center_horizontal">
+        android:id="@+id/tableLayout"
+        android:layout_width="385dp"
+        android:layout_height="59dp"
+        android:layout_marginBottom="1dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/buttonMain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Main" />
+
+            <Button
+                android:id="@+id/buttonProduits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Produits" />
+
+            <Button
+                android:id="@+id/buttonRecettes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recettes" />
+
+            <Button
+                android:id="@+id/buttonListe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Liste" />
+        </TableRow>
     </TableLayout>
+
+
+    <EditText
+        android:id="@+id/editTextSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/produitsTableLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableLayout"
+        app:layout_constraintVertical_bias="0.435" />
+
+    <TableLayout
+        android:id="@+id/produitsTableLayout"
+        android:layout_width="390dp"
+        android:layout_height="536dp"
+        android:layout_gravity="center_horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableLayout"></TableLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

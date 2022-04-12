@@ -7,11 +7,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -34,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Produits> listeProduitsChoice = new ArrayList<Produits>();
 
+    private EditText editTextSearch;
+
     private TableLayout tablayoutSearch;
     private Button buttonMain;
     private Button buttonProduits;
@@ -45,14 +50,57 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         tablayoutSearch = findViewById(R.id.tablayoutSearch);
+        getSupportActionBar().hide();
 
         this.deleteDatabase("listeDeCourses.db");
 
         createData();
 
-        getMenuSwitch();
+        getSearch();
 
-        getProduits();
+        getMenuSwitch();
+    }
+
+    public void getSearch() {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Produits, Integer> daoProduits = linker.getDao( Produits.class );
+
+            List<Produits> produits = daoProduits.queryForAll();
+
+            for (Produits produit: produits) {
+                getProduits(produit);
+            }
+
+            editTextSearch = findViewById(R.id.editTextSearch);
+
+            editTextSearch.addTextChangedListener(new TextWatcher() {
+
+                public void afterTextChanged(Editable s) {
+                }
+
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    tablayoutSearch.removeAllViews();
+                    if(s != "") {
+                        for (Produits produit: produits) {
+                            if((produit.getLibelle().toLowerCase()).contains(s.toString().toLowerCase())) {
+                                getProduits(produit);
+                            }
+                        }
+                    } else {
+                        for (Produits produit: produits) {
+                            getProduits(produit);
+                        }
+                    }
+                }
+            });
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
     }
 
     public void getMenuSwitch() {
@@ -81,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         buttonRecettes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent monIntent = new Intent(MainActivity.this, ProduitsActivity.class);
+                Intent monIntent = new Intent(MainActivity.this, RecettesActivity.class);
                 startActivity(monIntent);
             }
         });
@@ -103,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             Dao<Produits, Integer> daoProduits = linker.getDao( Produits.class );
 
             Produits produits = new Produits();
-            produits.setLibelle("Frommage");
+            produits.setLibelle("Fromage");
             produits.setQuantite(5);
             daoProduits.create(produits);
 
@@ -118,44 +166,28 @@ public class MainActivity extends AppCompatActivity {
         linker.close();
     }
 
-    public void getProduits() {
-        DataBaseLinker linker = new DataBaseLinker(this);
-        try {
-            Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
+    public void getProduits(Produits produit) {
+        TableRow tableRowProduit = new TableRow(this);
+        //tableRowProduit.setBackgroundColor(Color.RED);
 
-            List<Produits> produits = daoProduits.queryForAll();
+        TextView value = new TextView(this);
+        value.setText(produit.getLibelle()+" | "+produit.getQuantite());
+        value.setTextSize(20);
 
+        int idProduit = produit.getIdProduit();
 
-            for (Produits produit: produits) {
-                TableRow tableRowProduit = new TableRow(this);
-                //tableRowProduit.setBackgroundColor(Color.RED);
-
-
-
-                TextView value = new TextView(this);
-                value.setText(produit.getLibelle()+" | "+produit.getQuantite());
-                value.setTextSize(20);
-
-                int idProduit = produit.getIdProduit();
-
-                CheckBox checkBox = new CheckBox(this);
-                checkBox.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        addProduitCheck(idProduit);
-                    }
-                });
-
-                tableRowProduit.addView(checkBox);
-                tableRowProduit.addView(value);
-
-                tablayoutSearch.addView(tableRowProduit);
+        CheckBox checkBox = new CheckBox(this);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addProduitCheck(idProduit);
             }
+        });
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        linker.close();
+        tableRowProduit.addView(checkBox);
+        tableRowProduit.addView(value);
+
+        tablayoutSearch.addView(tableRowProduit);
     }
 
     public void addProduitCheck(int idProduit) {
@@ -169,6 +201,8 @@ public class MainActivity extends AppCompatActivity {
             Produits produit = daoProduits.queryForId(idProduit);
             if (produit != null) {
                 listeProduitsChoice.add(produit);
+
+                // SPINNER CADIE = BOOL ISCART
 
                 Listes listes = new Listes();
                 listes.setProduit(produit);

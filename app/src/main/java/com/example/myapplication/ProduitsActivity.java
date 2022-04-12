@@ -4,7 +4,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,16 +31,102 @@ public class ProduitsActivity extends AppCompatActivity {
     private static final String TAG = "ProduitsActivity";
     private TableLayout produitsTableLayout;
 
+    private EditText editTextSearch;
+
+    private Button buttonMain;
+    private Button buttonProduits;
+    private Button buttonRecettes;
+    private Button buttonListe;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.produits_main);
         produitsTableLayout = findViewById(R.id.produitsTableLayout);
+        getSupportActionBar().hide();
 
-        getProduits();
+        getMenuSwitch();
+
+        getEditSearch();
     }
 
-    public void getProduits() {
+    public void getMenuSwitch() {
+        buttonMain = findViewById(R.id.buttonMain);
+        buttonMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent monIntent = new Intent(ProduitsActivity.this, MainActivity.class);
+                startActivity(monIntent);
+            }
+        });
+
+        /*
+        buttonProduits = findViewById(R.id.buttonProduits);
+        buttonProduits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent monIntent = new Intent(ProduitsActivity.this, ProduitsActivity.class);
+                startActivity(monIntent);
+            }
+        });
+        */
+
+        buttonRecettes = findViewById(R.id.buttonRecettes);
+        buttonRecettes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent monIntent = new Intent(ProduitsActivity.this, RecettesActivity.class);
+                startActivity(monIntent);
+            }
+        });
+
+        buttonListe = findViewById(R.id.buttonListe);
+        buttonListe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent monIntent = new Intent(ProduitsActivity.this, ListeActivity.class);
+                startActivity(monIntent);
+            }
+        });
+
+    }
+
+    public void getProduits(Produits produit) {
+        TableRow tableRowProduit = new TableRow(this);
+
+        TextView value = new TextView(this);
+        value.setText(produit.getLibelle() + " " + produit.getQuantite());
+
+        tableRowProduit.addView(value);
+
+        int idProduit = produit.getIdProduit();
+
+        Button deleteProduit = new Button(this);
+        deleteProduit.setText("Delete");
+        deleteProduit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteProduit(idProduit, tableRowProduit);
+            }
+        });
+
+        tableRowProduit.addView(deleteProduit);
+
+        Button editProduit = new Button(this);
+        editProduit.setText("Edit");
+        editProduit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editProduit(idProduit, tableRowProduit);
+            }
+        });
+
+        tableRowProduit.addView(editProduit);
+
+        produitsTableLayout.addView(tableRowProduit);
+    }
+
+    public void getEditSearch() {
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
@@ -45,41 +134,33 @@ public class ProduitsActivity extends AppCompatActivity {
             List<Produits> produits = daoProduits.queryForAll();
 
             for (Produits produit: produits) {
-                TableRow tableRowProduit = new TableRow(this);
-
-                TextView value = new TextView(this);
-                value.setText(produit.getLibelle() + " " + produit.getQuantite());
-
-                tableRowProduit.addView(value);
-
-                int idProduit = produit.getIdProduit();
-
-                Button deleteProduit = new Button(this);
-                deleteProduit.setText("Delete");
-                deleteProduit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        deleteProduit(idProduit, tableRowProduit);
-                    }
-                });
-
-                tableRowProduit.addView(deleteProduit);
-
-
-                Button editProduit = new Button(this);
-                editProduit.setText("Edit");
-                editProduit.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        editProduit(idProduit, tableRowProduit);
-                    }
-                });
-
-                tableRowProduit.addView(editProduit);
-
-                produitsTableLayout.addView(tableRowProduit);
+                getProduits(produit);
             }
 
+            editTextSearch = findViewById(R.id.editTextSearch);
+
+            editTextSearch.addTextChangedListener(new TextWatcher() {
+                public void afterTextChanged(Editable s) {
+                }
+
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    produitsTableLayout.removeAllViews();
+                    if(s != "") {
+                        for (Produits produit: produits) {
+                            if((produit.getLibelle().toLowerCase()).contains(s.toString().toLowerCase())) {
+                                getProduits(produit);
+                            }
+                        }
+                    } else {
+                        for (Produits produit: produits) {
+                            getProduits(produit);
+                        }
+                    }
+                }
+            });
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -99,6 +180,10 @@ public class ProduitsActivity extends AppCompatActivity {
                 AlertDialog.Builder editPopup = new AlertDialog.Builder(this);
                 editPopup.setTitle("Voulez vous modifier "+produit.getLibelle()+" ?");
 
+                //TableLayout EDIT
+
+                TableLayout tableLayout = new TableLayout(this);
+
                 // MODIFICATION LIBELLE PRODUIT
 
                 TableRow tableRowLibelle = new TableRow(this);
@@ -111,7 +196,7 @@ public class ProduitsActivity extends AppCompatActivity {
                 changeLibelle.setText(produit.getLibelle());
                 tableRowLibelle.addView(changeLibelle);
 
-                editPopup.setView(tableRowLibelle);
+                tableLayout.addView(tableRowLibelle);
 
                 // MODIFICATION QUANTITE PRODUIT
 
@@ -122,20 +207,25 @@ public class ProduitsActivity extends AppCompatActivity {
                 tableRowQuantite.addView(infoQuantite);
 
                 EditText changeQuantite = new EditText(this);
-                changeQuantite.setText(produit.getQuantite());
+                changeQuantite.setText(""+produit.getQuantite());
                 tableRowQuantite.addView(changeQuantite);
 
-                editPopup.setView(tableRowLibelle);
+                tableLayout.addView(tableRowQuantite);
+
+                // ADD VIEW IN POPUP EDIT
+
+                editPopup.setView(tableLayout);
 
                 //deletePopup.setMessage("Cliquez sur oui ou non");
                 editPopup.setPositiveButton("Mettre à jour", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) { ;
                         try {
+
                             produit.setLibelle(changeLibelle.getText().toString());
                             produit.setQuantite(Integer.parseInt(changeQuantite.getText().toString()));
                             daoProduits.update(produit);
 
-                            Log.i(TAG, "Produit bien mis à jour");
+                            Log.i(TAG, "Produit bien mis à jour: "+changeLibelle.getText().toString() + " | "+changeQuantite.getText().toString());
                         } catch (SQLException throwables) {
                             throwables.printStackTrace();
                         }

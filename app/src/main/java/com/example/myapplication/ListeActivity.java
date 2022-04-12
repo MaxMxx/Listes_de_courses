@@ -30,6 +30,9 @@ public class ListeActivity extends AppCompatActivity {
         setContentView(R.layout.liste);
         this.deleteDatabase("listeDeCourses.db");
         DataBaseLinker linker = new DataBaseLinker(this);
+
+        getSupportActionBar().hide();
+
         containerListe = findViewById(R.id.container_liste);
         buttonSupprimerListe = findViewById(R.id.button_supprimer_liste);
         Dao<Listes, Integer> daoListes = null;
