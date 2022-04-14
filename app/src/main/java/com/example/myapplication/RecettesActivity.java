@@ -134,6 +134,8 @@ public class RecettesActivity extends AppCompatActivity {
                         List<Produits> listProduits = daoProduits.queryForAll();
                         List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
 
+                        tableLayoutRecettes.removeAllViews();
+                        getRecettesAfterSelect();
                         reloadRecetteAndProduit(listRecettes.get(listRecettes.size()-1).getLibelleRecette(), listProduits, listContenirRecettes);
 
                     } catch (SQLException throwables) {
@@ -463,8 +465,9 @@ public class RecettesActivity extends AppCompatActivity {
     }
 
     public void getProduitsCheck(Produits produit) {
+        editTextSearch = findViewById(R.id.editTextSearch);
+
         if(!editTextSearch.getText().toString().equals("")) {
-            editTextSearch = findViewById(R.id.editTextSearch);
 
             editTextSearch.addTextChangedListener(new TextWatcher() {
 
