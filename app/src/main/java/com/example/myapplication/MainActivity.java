@@ -52,9 +52,14 @@ public class MainActivity extends AppCompatActivity {
         tablayoutSearch = findViewById(R.id.tablayoutSearch);
         getSupportActionBar().hide();
 
-        this.deleteDatabase("listeDeCourses.db");
+        // A UTILISER QUE POUR FAIRE UN RESET DE LA BDD AVEC QUELQUE PRODUIT
 
+        /*
+
+        this.deleteDatabase("listeDeCourses.db");
         createData();
+
+        */
 
         getSearch();
 
@@ -180,7 +185,14 @@ public class MainActivity extends AppCompatActivity {
         checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addProduitCheck(idProduit);
+                boolean checked = checkBox.isChecked();
+                if (checked){
+                    addProduitCheck(idProduit);
+                }
+                else{
+                    removeProduitCheck(idProduit);
+                }
+
             }
         });
 
@@ -214,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
             throwables.printStackTrace();
         }
         linker.close();
+    }
+
+    public void removeProduitCheck(int idProduit) {
+
     }
 
 }

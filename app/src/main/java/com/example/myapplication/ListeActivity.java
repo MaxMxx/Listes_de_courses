@@ -39,9 +39,9 @@ public class ListeActivity extends AppCompatActivity {
         try {
             daoListes = linker.getDao( Listes.class );
             Produits produit = new Produits("Pizza",4);
-            Recettes recette = new Recettes(1,produit);
+            /*Recettes recette = new Recettes(1,produit);
             Listes test = new Listes(recette,produit,45);
-            daoListes.create(test);
+            daoListes.create(test);*/
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

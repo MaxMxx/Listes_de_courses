@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.example.myapplication.Entity.ContenirRecettes;
 import com.example.myapplication.Entity.Listes;
 import com.example.myapplication.Entity.Produits;
 import com.example.myapplication.Entity.Recettes;
@@ -27,6 +28,7 @@ public class DataBaseLinker extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable( connectionSource, Listes.class );
             TableUtils.createTable( connectionSource, Produits.class );
             TableUtils.createTable( connectionSource, Recettes.class );
+            TableUtils.createTable( connectionSource, ContenirRecettes.class );
 
             Log.i( "DATABASE", "onCreate invoked" );
         } catch( Exception exception ) {

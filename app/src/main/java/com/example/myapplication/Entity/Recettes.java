@@ -9,20 +9,15 @@ public class Recettes {
     @DatabaseField( columnName = "idRecette", generatedId = true )
     private int idRecette;
 
-    @DatabaseField( columnName="idLaRecette")
-    private int idLaRecette;
-
-    @DatabaseField( canBeNull = false, foreign = true, foreignColumnName = "idProduit", foreignAutoCreate = true )
-    private Produits produit;
+    @DatabaseField( columnName="libelleRecette")
+    private String libelleRecette;
 
     public Recettes() {
     }
 
-    public Recettes(int idLaRecette, Produits produit) {
-        this.idLaRecette = idLaRecette;
-        this.produit = produit;
+    public Recettes(String libelleRecette) {
+        this.libelleRecette = libelleRecette;
     }
-
 
     public int getIdRecette() {
         return idRecette;
@@ -32,19 +27,11 @@ public class Recettes {
         this.idRecette = idRecette;
     }
 
-    public int getIdLaRecette() {
-        return idLaRecette;
+    public String getLibelleRecette() {
+        return libelleRecette;
     }
 
-    public void setIdLaRecette(int idLaRecette) {
-        this.idLaRecette = idLaRecette;
-    }
-
-    public Produits getProduit() {
-        return produit;
-    }
-
-    public void setProduit(Produits produit) {
-        this.produit = produit;
+    public void setLibelleRecette(String libelleRecette) {
+        this.libelleRecette = libelleRecette;
     }
 }

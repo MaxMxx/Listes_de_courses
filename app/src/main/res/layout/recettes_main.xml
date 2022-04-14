@@ -52,14 +52,14 @@
         android:id="@+id/editTextSearch"
         android:layout_width="189dp"
         android:layout_height="44dp"
-        android:layout_marginTop="352dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="7dp"
         android:ems="10"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintBottom_toTopOf="@+id/tableRow"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ScrollView
         android:id="@+id/scrollView3"
@@ -78,13 +78,7 @@
             android:id="@+id/tableLayoutRecettes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <Spinner
-                android:id="@+id/spinner3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
+            android:orientation="vertical"/>
     </ScrollView>
 
     <Button
@@ -100,10 +94,30 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 
+    <TableRow
+        android:id="@+id/tableRow"
+        android:layout_width="374dp"
+        android:layout_height="49dp"
+        android:layout_marginBottom="4dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        tools:layout_editor_absoluteX="18dp">
+
+        <TextView
+            android:id="@+id/textViewSelectRecette"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Recettes sélectionné: "
+            android:textSize="18dp" />
+
+    </TableRow>
+
     <ScrollView
         android:id="@+id/scrollView2"
-        android:layout_width="386dp"
-        android:layout_height="317dp"
+        android:layout_width="394dp"
+        android:layout_height="260dp"
         android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -116,19 +130,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center">
-
-                <TextView
-                    android:id="@+id/textViewSelectRecette"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Recettes sélectionné: "
-                    android:textSize="18dp" />
-
-            </TableRow>
         </LinearLayout>
     </ScrollView>
 

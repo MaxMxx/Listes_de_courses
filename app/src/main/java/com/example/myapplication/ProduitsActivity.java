@@ -19,7 +19,10 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.Entity.ContenirRecettes;
+import com.example.myapplication.Entity.Listes;
 import com.example.myapplication.Entity.Produits;
+import com.example.myapplication.Entity.Recettes;
 import com.google.android.material.snackbar.Snackbar;
 import com.j256.ormlite.dao.Dao;
 
@@ -38,6 +41,8 @@ public class ProduitsActivity extends AppCompatActivity {
     private Button buttonRecettes;
     private Button buttonListe;
 
+    private Button buttonCreateProduit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +50,95 @@ public class ProduitsActivity extends AppCompatActivity {
         produitsTableLayout = findViewById(R.id.produitsTableLayout);
         getSupportActionBar().hide();
 
+        buttonCreate();
+
         getMenuSwitch();
 
+        getEditSearch();
+    }
+
+    public void buttonCreate() {
+        buttonCreateProduit = findViewById(R.id.buttonCreateProduit);
+        buttonCreateProduit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getPopupCreate();
+            }
+        });
+    }
+
+    public void getPopupCreate() {
+        AlertDialog.Builder createPopup = new AlertDialog.Builder(this);
+        createPopup.setTitle("Voulez-vous créer un produit ?");
+
+        //TableLayout EDIT
+
+        TableLayout tableLayout = new TableLayout(this);
+
+        // MODIFICATION LIBELLE PRODUIT
+
+        TableRow tableRowLibelle = new TableRow(this);
+
+        TextView infoLibelle = new TextView(this);
+        infoLibelle.setText("Libelle: ");
+        tableRowLibelle.addView(infoLibelle);
+
+        EditText createLibelle = new EditText(this);
+        tableRowLibelle.addView(createLibelle);
+
+        tableLayout.addView(tableRowLibelle);
+
+        // MODIFICATION QUANTITE PRODUIT
+
+        TableRow tableRowQuantite = new TableRow(this);
+
+        TextView infoQuantite = new TextView(this);
+        infoQuantite.setText("Quantite: ");
+        tableRowQuantite.addView(infoQuantite);
+
+        EditText createQuantite = new EditText(this);
+        tableRowQuantite.addView(createQuantite);
+
+        tableLayout.addView(tableRowQuantite);
+
+        // ADD VIEW IN POPUP EDIT
+
+        createPopup.setView(tableLayout);
+
+        //deletePopup.setMessage("Cliquez sur oui ou non");
+        createPopup.setPositiveButton("Créer", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) { ;
+                createProduit(createLibelle.getText().toString(), createQuantite.getText().toString());
+            }
+        });
+        createPopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Log.i(TAG, "Produit non crée");
+            }
+        });
+        createPopup.show();
+    }
+
+    public void createProduit(String libelle, String quantite) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
+
+            Produits produit = new Produits();
+            produit.setLibelle(libelle);
+            produit.setQuantite(Integer.parseInt(quantite));
+            daoProduits.create(produit);
+
+            reloadProduitsLayout();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
+    }
+
+    public void reloadProduitsLayout() {
+        produitsTableLayout.removeAllViews();
         getEditSearch();
     }
 
@@ -167,7 +259,6 @@ public class ProduitsActivity extends AppCompatActivity {
         linker.close();
     }
 
-
     public void editProduit(int idProduit, TableRow tableRowProduit) {
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
@@ -219,16 +310,7 @@ public class ProduitsActivity extends AppCompatActivity {
                 //deletePopup.setMessage("Cliquez sur oui ou non");
                 editPopup.setPositiveButton("Mettre à jour", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) { ;
-                        try {
-
-                            produit.setLibelle(changeLibelle.getText().toString());
-                            produit.setQuantite(Integer.parseInt(changeQuantite.getText().toString()));
-                            daoProduits.update(produit);
-
-                            Log.i(TAG, "Produit bien mis à jour: "+changeLibelle.getText().toString() + " | "+changeQuantite.getText().toString());
-                        } catch (SQLException throwables) {
-                            throwables.printStackTrace();
-                        }
+                        createProduit(idProduit, changeLibelle.getText().toString(), Integer.parseInt(changeQuantite.getText().toString()));
                     }
                 });
                 editPopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
@@ -246,11 +328,67 @@ public class ProduitsActivity extends AppCompatActivity {
         linker.close();
     }
 
-    public void deleteProduit(int idProduit, TableRow tableRowProduit) {
+    public void createProduit(int idProduit, String libelle, int quantite) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
+
+            Produits produit = daoProduits.queryForId(idProduit);
+
+            produit.setLibelle(libelle);
+            produit.setQuantite(quantite);
+            daoProduits.update(produit);
+
+            reloadProduitsLayout();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
+    }
+
+    public void removeP(List<ContenirRecettes> listContenirRecettes, List<Listes> listCourses, Produits produit, TableRow tableRowProduit) {
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
 
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
+            Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao(ContenirRecettes.class);
+            Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);
+
+            for(ContenirRecettes contenirRecette: listContenirRecettes) {
+                Produits produitSelect = contenirRecette.getProduit();
+                if(produitSelect.getIdProduit() == produit.getIdProduit()) {
+                    daoContenirRecettes.delete(contenirRecette);
+                }
+            }
+
+            for(Listes liste: listCourses) {
+                Produits produitSelect = liste.getProduit();
+                if(produitSelect.getIdProduit() == produit.getIdProduit()) {
+                    daoListes.delete(liste);
+                }
+            }
+
+            daoProduits.delete(produit);
+
+            Log.i(TAG, "Vous avez suprimmé !");
+
+            reloadProduitsLayout();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
+    }
+
+    public void deleteProduit(int idProduit, TableRow tableRowProduit) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
+            Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao(ContenirRecettes.class);
+            Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);
+
+            List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
+            List<Listes> listCourses = daoListes.queryForAll();
 
             Produits produit = daoProduits.queryForId(idProduit);
             if (produit != null) {
@@ -259,9 +397,7 @@ public class ProduitsActivity extends AppCompatActivity {
                 //deletePopup.setMessage("Cliquez sur oui ou non");
                 deletePopup.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        /*daoProduits.delete(produit);
-                        produitsTableLayout.removeView(tableRowProduit);*/
-                        Log.i(TAG, "Vous avez suprimmé !");
+                        removeP(listContenirRecettes, listCourses, produit, tableRowProduit);
                     }
                 });
                 deletePopup.setNegativeButton("Non", new DialogInterface.OnClickListener() {
@@ -270,8 +406,6 @@ public class ProduitsActivity extends AppCompatActivity {
                     }
                 });
                 deletePopup.show();
-
-
             }
 
         } catch (SQLException throwables) {

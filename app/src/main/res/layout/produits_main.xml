@@ -72,4 +72,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tableLayout"></TableLayout>
 
+    <Button
+        android:id="@+id/buttonCreateProduit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Créer un produit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/produitsTableLayout" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
