@@ -273,7 +273,7 @@ public class RecettesActivity extends AppCompatActivity {
 
                     tableRecetteName.addView(buttonRemove);
 
-                    // BUTTON REMOVE DE LA RECETTE
+                    // BUTTON INFO DE LA RECETTE
 
                     Button buttonInfo = new Button(this);
                     buttonInfo.setText("INFO");
@@ -298,29 +298,73 @@ public class RecettesActivity extends AppCompatActivity {
     }
 
     public void infoRecette(Recettes recette) {
-        AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(this);
-        infoRecettePopup.setTitle("Voulez-vous modifier les produits ajoutés à la recette ?");
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(this);
+            infoRecettePopup.setTitle("Voulez-vous modifier les produits ajoutés à la recette ?");
+    
+            TableLayout tableLayout = new TableLayout(this);
+            
+            Dao<Produits, Integer> daoProduits = linker.getDao( Produits.class );
+            Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao( ContenirRecettes.class );
+            Dao<Recettes, Integer> daoRecettes = linker.getDao( Recettes.class );
 
-        TableLayout tableLayout = new TableLayout(this);
+            List<Produits> listProduit = daoProduits.queryForAll();
+            List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
+            List<Recettes> listRecettes = daoRecettes.queryForAll();
 
-        // LIBELLE DU PRODUIT
+            for(ContenirRecettes contenirRecette:listContenirRecettes) {
+                Recettes recetteSelect = contenirRecette.getRecette();
+                if(recetteSelect.getIdRecette() == recette.getIdRecette()) {
+                    for(Produits produit: listProduit) {
+                       Produits produitSelect = contenirRecette.getProduit();
+                       if(produitSelect.getIdProduit() == produit.getIdProduit()) {
+                           // LIBELLE DU PRODUIT
 
-        TableRow tableRowLibelle = new TableRow(this);
+                           TableRow tableRowLibelle = new TableRow(this);
 
-        TextView infoLibelle = new TextView(this);
-        infoLibelle.setText("Libelle: ");
-        tableRowLibelle.addView(infoLibelle);
+                           TextView infoLibelle = new TextView(this);
+                           infoLibelle.setText("Libelle: "+produitSelect.getLibelle());
+                           tableRowLibelle.addView(infoLibelle);
 
-        // FAIRE CHECKBOX
+                           // CHECK BOX DU PRODUIT
 
-        infoRecettePopup.setView(tableLayout);
+                           CheckBox checkBox = new CheckBox(this);
+                           checkBox.setChecked(true);
+                           checkBox.setOnClickListener(new View.OnClickListener() {
+                               @Override
+                               public void onClick(View v) {
+                                   boolean checked = checkBox.isChecked();
+                                   if (!checked){
+                                       removeProduitRecette(produit);
+                                       tableLayoutRecettes.removeAllViews();
+                                       getRecettesAfterSelect();
+                                       reloadRecetteAndProduit(listRecettes.get(listRecettes.size()-1).getLibelleRecette(), listProduit, listContenirRecettes);
+                                   }
+                               }
+                           });
 
-        infoRecettePopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                Log.i(TAG, "Retour");
+                           tableRowLibelle.addView(checkBox);
+
+                           tableLayout.addView(tableRowLibelle);
+
+                           infoRecettePopup.setView(tableLayout);
+
+                           infoRecettePopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
+                               public void onClick(DialogInterface dialog, int id) {
+                                   Log.i(TAG, "Retour");
+                               }
+                           });
+                       }
+                    }
+                }
             }
-        });
-        infoRecettePopup.show();
+
+            infoRecettePopup.show();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
     }
 
     public void selectRecette(int idRecette, String libelle, List<Produits> listProduits, List<ContenirRecettes> listContenirRecettes) {
@@ -386,14 +430,20 @@ public class RecettesActivity extends AppCompatActivity {
 
                     tableRecetteName.addView(buttonRemove);
 
-                    //SPINNER DE LA RECETTE AVEC TOUT LES PRODUITS / QUI SONT MODIFIABLES
+                    // BUTTON INFO DE LA RECETTE
 
-                    /*LinearLayout tableRecetteSpinner = new LinearLayout(this);
-                    Spinner spinnerRecette = new Spinner(this);
-                    tableRecetteSpinner.addView(spinnerRecette);*/
+                    Button buttonInfo = new Button(this);
+                    buttonInfo.setText("INFO");
+                    buttonInfo.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            infoRecette(recette);
+                        }
+                    });
+
+                    tableRecetteName.addView(buttonInfo);
 
                     tableLayoutRecettes.addView(tableRecetteName);
-                    //tableLayoutRecettes.addView(tableRecetteSpinner);
                 }
 
                 reloadRecetteAndProduit(recetteSelect.getLibelleRecette(), listProduit, listContenirRecettes);

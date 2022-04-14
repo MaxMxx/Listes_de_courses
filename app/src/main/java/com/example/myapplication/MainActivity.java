@@ -1,30 +1,22 @@
 package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.myapplication.Entity.Listes;
 import com.example.myapplication.Entity.Produits;
 import com.example.myapplication.Entity.Recettes;
-import com.google.android.material.snackbar.Snackbar;
 import com.j256.ormlite.dao.Dao;
 
 import java.sql.SQLException;
@@ -209,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
             Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);
             Dao<Recettes, Integer> daoRecettes = linker.getDao(Recettes.class);
-
+            /*
             Produits produit = daoProduits.queryForId(idProduit);
             if (produit != null) {
                 listeProduitsChoice.add(produit);
@@ -221,6 +213,8 @@ public class MainActivity extends AppCompatActivity {
                 daoListes.create(listes);
 
             }
+            */
+
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();

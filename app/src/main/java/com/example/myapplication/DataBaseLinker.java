@@ -6,10 +6,11 @@ import android.util.Log;
 
 import com.example.myapplication.Entity.ContenirRecettes;
 import com.example.myapplication.Entity.Listes;
+import com.example.myapplication.Entity.ListesProduits;
+import com.example.myapplication.Entity.ListesRecettes;
 import com.example.myapplication.Entity.Produits;
 import com.example.myapplication.Entity.Recettes;
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -26,6 +27,8 @@ public class DataBaseLinker extends OrmLiteSqliteOpenHelper {
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
             TableUtils.createTable( connectionSource, Listes.class );
+            TableUtils.createTable( connectionSource, ListesProduits.class );
+            TableUtils.createTable( connectionSource, ListesRecettes.class );
             TableUtils.createTable( connectionSource, Produits.class );
             TableUtils.createTable( connectionSource, Recettes.class );
             TableUtils.createTable( connectionSource, ContenirRecettes.class );
