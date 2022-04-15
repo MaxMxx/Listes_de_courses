@@ -17,6 +17,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.myapplication.Entity.ContenirRecettes;
+import com.example.myapplication.Entity.ListesProduits;
 import com.example.myapplication.Entity.Produits;
 import com.j256.ormlite.dao.Dao;
 
@@ -341,13 +342,13 @@ public class ProduitsActivity extends AppCompatActivity {
         linker.close();
     }
 
-    public void removeP(List<ContenirRecettes> listContenirRecettes, List<Listes> listCourses, Produits produit, TableRow tableRowProduit) {
+    public void removeP(List<ContenirRecettes> listContenirRecettes, List<ListesProduits> listCoursesProduits, Produits produit, TableRow tableRowProduit) {
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
 
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
             Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao(ContenirRecettes.class);
-            Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);
+            Dao<ListesProduits, Integer> daoListesProduits = linker.getDao(ListesProduits.class);
 
             for(ContenirRecettes contenirRecette: listContenirRecettes) {
                 Produits produitSelect = contenirRecette.getProduit();
@@ -356,10 +357,10 @@ public class ProduitsActivity extends AppCompatActivity {
                 }
             }
 
-            for(Listes liste: listCourses) {
+            for(ListesProduits liste: listCoursesProduits) {
                 Produits produitSelect = liste.getProduit();
                 if(produitSelect.getIdProduit() == produit.getIdProduit()) {
-                    daoListes.delete(liste);
+                    daoListesProduits.delete(liste);
                 }
             }
 
@@ -379,10 +380,10 @@ public class ProduitsActivity extends AppCompatActivity {
         try {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
             Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao(ContenirRecettes.class);
-            Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);
+            Dao<ListesProduits, Integer> daoListes = linker.getDao(ListesProduits.class);
 
             List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
-            List<Listes> listCourses = daoListes.queryForAll();
+            List<ListesProduits> listCourses = daoListes.queryForAll();
 
             Produits produit = daoProduits.queryForId(idProduit);
             if (produit != null) {

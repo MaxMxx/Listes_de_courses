@@ -1,9 +1,12 @@
 package com.example.myapplication;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -96,7 +99,6 @@ public class ListeActivity extends AppCompatActivity {
 
     }
 
-
     private void getListeAll(){
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
@@ -114,87 +116,97 @@ public class ListeActivity extends AppCompatActivity {
             List<Produits> listProduits = daoProduits.queryForAll();
             List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
 
-            for(Listes liste: listListes) {
-                for(ListesProduits listesProduit: listListesProduits) {
-                    Listes listeSelect = listesProduit.getListe();
-                    if(liste.getIdListe() == listeSelect.getIdListe()) {
-                        for(Produits produit: listProduits) {
-                            Produits produitSelect = listesProduit.getProduit();
-                            if(produitSelect.getIdProduit() == produit.getIdProduit()) {
-                                LinearLayout linearLayout = new LinearLayout(this);
+            if(listListes.size() != 0) {
+                for(Listes liste: listListes) {
+                    for(ListesProduits listesProduit: listListesProduits) {
+                        Listes listeSelect = listesProduit.getListe();
+                        if(liste.getIdListe() == listeSelect.getIdListe()) {
+                            for(Produits produit: listProduits) {
+                                Produits produitSelect = listesProduit.getProduit();
+                                if(produitSelect.getIdProduit() == produit.getIdProduit()) {
+                                    LinearLayout linearLayout = new LinearLayout(this);
 
-                                TextView libelle = new TextView(this);
-                                libelle.setText(produitSelect.getLibelle());
-                                linearLayout.addView(libelle);
-
-                                EditText quantite = new EditText(this);
-                                quantite.setText(liste.getQuantite());
-                                linearLayout.addView(quantite);
-
-                                CheckBox addCart = new CheckBox(this);
-                                addCart.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        boolean checked = addCart.isChecked();
-                                        if(checked){
-                                            addInCart();
-                                        } else {
-                                            removeInCart();
-                                        }
+                                    TextView libelle = new TextView(this);
+                                    if(listeSelect.isCart()) {
+                                        libelle.setText(Html.fromHtml("<strike>"+produitSelect.getLibelle()+"</strike>"));
+                                    } else {
+                                        libelle.setText(produitSelect.getLibelle());
                                     }
-                                });
-                                linearLayout.addView(addCart);
+                                    linearLayout.addView(libelle);
 
-                                containerListe.addView(linearLayout);
+                                    EditText quantite = new EditText(this);
+                                    quantite.setText(liste.getQuantite());
+                                    linearLayout.addView(quantite);
+
+                                    CheckBox addCart = new CheckBox(this);
+                                    addCart.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            boolean checked = addCart.isChecked();
+                                            if(checked){
+                                                addInCart(listeSelect.getIdListe());
+                                            } else {
+                                                removeInCart(listeSelect.getIdListe());
+                                            }
+                                        }
+                                    });
+                                    linearLayout.addView(addCart);
+
+                                    containerListe.addView(linearLayout);
+                                }
                             }
                         }
                     }
-                }
-                for(ListesRecettes listesRecettes: listListesRecettes) {
-                    Listes listeSelect = listesRecettes.getListe();
-                    if(liste.getIdListe() == listeSelect.getIdListe()) {
+                    for(ListesRecettes listesRecettes: listListesRecettes) {
+                        Listes listeSelect = listesRecettes.getListe();
                         if(liste.getIdListe() == listeSelect.getIdListe()) {
-                            for(Recettes recettes: listRecettes) {
-                                Recettes recetteSelect = listesRecettes.getRecette();
-                                if(recettes.getIdRecette() == recetteSelect.getIdRecette()) {
-                                    for(ContenirRecettes contenirRecettes: listContenirRecettes) {
-                                        Recettes recetteContenirSelect = contenirRecettes.getRecette();
-                                        if(recetteContenirSelect.getIdRecette() == recetteSelect.getIdRecette()) {
-                                            LinearLayout linearLayout = new LinearLayout(this);
+                            if(liste.getIdListe() == listeSelect.getIdListe()) {
+                                for(Recettes recettes: listRecettes) {
+                                    Recettes recetteSelect = listesRecettes.getRecette();
+                                    if(recettes.getIdRecette() == recetteSelect.getIdRecette()) {
+                                        for(ContenirRecettes contenirRecettes: listContenirRecettes) {
+                                            Recettes recetteContenirSelect = contenirRecettes.getRecette();
+                                            if(recetteContenirSelect.getIdRecette() == recetteSelect.getIdRecette()) {
+                                                LinearLayout linearLayout = new LinearLayout(this);
 
-                                            TextView libelle = new TextView(this);
-                                            libelle.setText(recetteContenirSelect.getLibelleRecette());
-                                            linearLayout.addView(libelle);
-
-                                            EditText quantite = new EditText(this);
-                                            quantite.setText(liste.getQuantite());
-                                            linearLayout.addView(quantite);
-
-                                            Button info = new Button(this);
-                                            info.setText("Info");
-                                            info.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                   viewProduitInfo();
+                                                TextView libelle = new TextView(this);
+                                                if(listeSelect.isCart()) {
+                                                    libelle.setText(Html.fromHtml("<strike>"+recetteContenirSelect.getLibelleRecette()+"</strike>"));
+                                                } else {
+                                                    libelle.setText(recetteContenirSelect.getLibelleRecette());
                                                 }
-                                            });
-                                            linearLayout.addView(info);
+                                                linearLayout.addView(libelle);
 
-                                            CheckBox addCart = new CheckBox(this);
-                                            addCart.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    boolean checked = addCart.isChecked();
-                                                    if(checked){
-                                                        addInCart();
-                                                    } else {
-                                                        removeInCart();
+                                                EditText quantite = new EditText(this);
+                                                quantite.setText(liste.getQuantite());
+                                                linearLayout.addView(quantite);
+
+                                                Button info = new Button(this);
+                                                info.setText("Info");
+                                                info.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        viewProduitInfo(recettes.getIdRecette());
                                                     }
-                                                }
-                                            });
-                                            linearLayout.addView(addCart);
+                                                });
+                                                linearLayout.addView(info);
 
-                                            containerListe.addView(linearLayout);
+                                                CheckBox addCart = new CheckBox(this);
+                                                addCart.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        boolean checked = addCart.isChecked();
+                                                        if(checked){
+                                                            addInCart(listeSelect.getIdListe());
+                                                        } else {
+                                                            removeInCart(listeSelect.getIdListe());
+                                                        }
+                                                    }
+                                                });
+                                                linearLayout.addView(addCart);
+
+                                                containerListe.addView(linearLayout);
+                                            }
                                         }
                                     }
                                 }
@@ -202,33 +214,158 @@ public class ListeActivity extends AppCompatActivity {
                         }
                     }
                 }
+
+                buttonSupprimerListe.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        deleteListe();
+                    }
+                });
+            } else {
+                LinearLayout linearLayout = new LinearLayout(this);
+                TextView liste = new TextView(this);
+                liste.setText("Votre liste est vide !");
+                linearLayout.addView(liste);
+                containerListe.addView(linearLayout);
             }
 
-            buttonSupprimerListe.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    deleteListe();
-                }
-            });
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+        linker.close();
     }
 
-    public void addInCart() {
+    public void addInCart(int idListe) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
 
+            Listes listes = daoListes.queryForId(idListe);
+            listes.setCart(true);
+            daoListes.update(listes);
+
+            reloadListeAfterChange();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
     }
 
-    public void removeInCart() {
+    public void removeInCart(int idListe) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
 
+            Listes listes = daoListes.queryForId(idListe);
+            listes.setCart(false);
+            daoListes.update(listes);
+
+            reloadListeAfterChange();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
     }
 
-    public void viewProduitInfo() {
+    public void viewProduitInfo(int idRecette) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Recettes, Integer> daoRecettes = linker.getDao( Recettes.class );
+            Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao( ContenirRecettes.class );
 
+            Recettes recettes = daoRecettes.queryForId(idRecette);
+            List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
+
+            AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(this);
+            infoRecettePopup.setTitle("Produits dans la recette "+recettes.getLibelleRecette()+" :");
+
+            for(ContenirRecettes contenirRecette:listContenirRecettes) {
+                if(recettes.getIdRecette() == contenirRecette.getIdContenirRecettes()) {
+                    TableLayout tableLayout = new TableLayout(this);
+
+                    Produits produit = contenirRecette.getProduit();
+
+                    TextView libelle = new TextView(this);
+                    libelle.setText(produit.getLibelle() + " | " + contenirRecette.getQuantite());
+
+                    tableLayout.addView(libelle);
+                    infoRecettePopup.setView(tableLayout);
+                }
+            }
+
+            infoRecettePopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    Log.i("TAG", "Retour");
+                }
+            });
+
+            infoRecettePopup.show();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
     }
 
     public void deleteListe() {
+        AlertDialog.Builder deletePopup = new AlertDialog.Builder(this);
+        deletePopup.setTitle("Etes vous sur de vouloir supprimer la Liste ?");
+
+        deletePopup.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                removeAllListe();
+            }
+        });
+
+        deletePopup.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Log.i("TAG", "Retour");
+            }
+        });
+
+        deletePopup.show();
+    }
+
+    public void removeAllListe() {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
+            Dao<ListesProduits, Integer> daoListesProduits = linker.getDao( ListesProduits.class );
+            Dao<ListesRecettes, Integer> daoListesRecettes = linker.getDao( ListesRecettes.class );
+
+            List<Listes> listListes = daoListes.queryForAll();
+            List<ListesProduits> listListesProduits = daoListesProduits.queryForAll();
+            List<ListesRecettes> listListesRecettes = daoListesRecettes.queryForAll();
+
+            for(Listes listes : listListes) {
+                daoListes.delete(listes);
+            }
+
+            for(ListesProduits listesProduits : listListesProduits) {
+                daoListesProduits.delete(listesProduits);
+            }
+
+            for(ListesRecettes listesRecettes : listListesRecettes) {
+                daoListesRecettes.delete(listesRecettes);
+            }
+
+            reloadListeAfterChange();
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
+    }
+
+    public void reloadListeAfterChange() {
+
+        containerListe.removeAllViews();
+
+        getListeAll();
+
 
     }
 

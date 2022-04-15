@@ -21,6 +21,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.myapplication.Entity.ContenirRecettes;
+import com.example.myapplication.Entity.Listes;
+import com.example.myapplication.Entity.ListesRecettes;
 import com.example.myapplication.Entity.Produits;
 import com.example.myapplication.Entity.Recettes;
 import com.j256.ormlite.dao.Dao;
@@ -33,7 +35,6 @@ import java.util.List;
 public class RecettesActivity extends AppCompatActivity {
 
     private static final String TAG = "RecettesActivity";
-    private int selectRecette;
 
     private LinearLayout tableLayoutRecettes;
     private EditText searchBar;
@@ -55,16 +56,53 @@ public class RecettesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.recettes_main);
         tableLayoutRecettes = findViewById(R.id.tableLayoutRecettes);
-        tableLayoutProduits = findViewById(R.id.tableLayoutProduits);
         getSupportActionBar().hide();
 
-        textViewSelectRecette = findViewById(R.id.textViewSelectRecette);
-
+        getMenuSwitch();
         getRecettes();
-
         createRecette();
 
-        getMenuSwitch();
+    }
+
+    public void getMenuSwitch() {
+
+        buttonMain = findViewById(R.id.buttonMain);
+        buttonMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent monIntent = new Intent(RecettesActivity.this, MainActivity.class);
+                startActivity(monIntent);
+            }
+        });
+
+        buttonProduits = findViewById(R.id.buttonProduits);
+        buttonProduits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent monIntent = new Intent(RecettesActivity.this, ProduitsActivity.class);
+                startActivity(monIntent);
+            }
+        });
+
+        /*
+        buttonRecettes = findViewById(R.id.buttonRecettes);
+        buttonRecettes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent monIntent = new Intent(RecettesActivity.this, RecettesActivity.class);
+                startActivity(monIntent);
+            }
+        });*/
+
+        buttonListe = findViewById(R.id.buttonListe);
+        buttonListe.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent monIntent = new Intent(RecettesActivity.this, ListeActivity.class);
+                startActivity(monIntent);
+            }
+        });
+
     }
 
     public void createRecette() {
@@ -113,30 +151,11 @@ public class RecettesActivity extends AppCompatActivity {
             editPopup.setPositiveButton("Créer", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) { ;
                     try {
-                        //createLibelle.getText().toString()
-
                         Recettes recette = new Recettes();
                         recette.setLibelleRecette(createLibelle.getText().toString());
                         daoRecettes.create(recette);
 
-                        List<Recettes> listRecettes = daoRecettes.queryForAll();
-
-                        Log.i(TAG, "TAUILLE DE LA LISTE: "+listRecettes.size());
-
-                        for (Recettes selectRecette : listRecettes) {
-                            Log.i(TAG, "RECETTES DANS LA LISTE: " + selectRecette.getIdRecette());
-                        }
-
-                        selectRecette = listRecettes.get(listRecettes.size()-1).getIdRecette();
-
-                        Log.i(TAG, "DONNE LID LA, ICI: "+selectRecette);
-
-                        List<Produits> listProduits = daoProduits.queryForAll();
-                        List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
-
-                        tableLayoutRecettes.removeAllViews();
-                        getRecettesAfterSelect();
-                        reloadRecetteAndProduit(listRecettes.get(listRecettes.size()-1).getLibelleRecette(), listProduits, listContenirRecettes);
+                        reloadPageAll();
 
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
@@ -156,66 +175,6 @@ public class RecettesActivity extends AppCompatActivity {
         linker.close();
     }
 
-    public void reloadRecetteAndProduit(String libelle, List<Produits> listProduits, List<ContenirRecettes> listContenirRecettes) {
-        tableLayoutProduits.removeAllViews();
-        textViewSelectRecette.setText("Recettes sélectionné: "+libelle);
-
-        if(listProduits.size() != 0) {
-            for(Produits produit: listProduits) {
-                if(listContenirRecettes.size() != 0) {
-                    for(ContenirRecettes contenirRecette: listContenirRecettes) {
-                        Produits produitSelect = contenirRecette.getProduit();
-                        if(produitSelect.getIdProduit() == produit.getIdProduit()) {
-                            getProduitsCheck(produitSelect);
-                        }
-                    }
-                }
-                getProduitsNoCheck(produit);
-            }
-        }
-    }
-
-    public void getMenuSwitch() {
-
-        buttonMain = findViewById(R.id.buttonMain);
-        buttonMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(RecettesActivity.this, MainActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-        buttonProduits = findViewById(R.id.buttonProduits);
-        buttonProduits.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(RecettesActivity.this, ProduitsActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-        /*
-        buttonRecettes = findViewById(R.id.buttonRecettes);
-        buttonRecettes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(RecettesActivity.this, RecettesActivity.class);
-                startActivity(monIntent);
-            }
-        });*/
-
-        buttonListe = findViewById(R.id.buttonListe);
-        buttonListe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(RecettesActivity.this, ListeActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-    }
-
     public void getRecettes() {
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
@@ -228,14 +187,6 @@ public class RecettesActivity extends AppCompatActivity {
             List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
 
             if(listRecette.size() != 0) {
-
-                // SELECTION DE LA PREMIERE RECETTE POUR RECETTES SELECTIONNE
-                selectRecette = listRecette.get(0).getIdRecette();
-
-                Recettes recetteSelect = daoRecettes.queryForId(selectRecette);
-
-                textViewSelectRecette.setText("Recettes sélectionné: "+recetteSelect.getLibelleRecette());
-
                 for (Recettes recette: listRecette) {
                     LinearLayout tableRecetteName = new LinearLayout(this);
 
@@ -245,20 +196,18 @@ public class RecettesActivity extends AppCompatActivity {
                     libelleRecette.setText(recette.getLibelleRecette());
                     tableRecetteName.addView(libelleRecette);
 
-                    // BUTTON SELECT DE LA RECETTE
+                    // BUTTON REMOVE DE LA RECETTE
 
-                    if(selectRecette != recette.getIdRecette()) {
-                        Button buttonSelect = new Button(this);
-                        buttonSelect.setText("SELECT");
-                        buttonSelect.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                selectRecette(recette.getIdRecette(), recette.getLibelleRecette(), listProduit, listContenirRecettes);
-                            }
-                        });
+                    Button buttonEdit = new Button(this);
+                    buttonEdit.setText("SUPPRIMER");
+                    buttonEdit.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            editRecettePopup(recette);
+                        }
+                    });
 
-                        tableRecetteName.addView(buttonSelect);
-                    }
+                    tableRecetteName.addView(buttonEdit);
 
                     // BUTTON REMOVE DE LA RECETTE
 
@@ -267,7 +216,7 @@ public class RecettesActivity extends AppCompatActivity {
                     buttonRemove.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            removeRecette(recette);
+                            removeRecettePopup(recette);
                         }
                     });
 
@@ -276,7 +225,7 @@ public class RecettesActivity extends AppCompatActivity {
                     // BUTTON INFO DE LA RECETTE
 
                     Button buttonInfo = new Button(this);
-                    buttonInfo.setText("INFO");
+                    buttonInfo.setText("DETAILS");
                     buttonInfo.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -289,7 +238,14 @@ public class RecettesActivity extends AppCompatActivity {
                     tableLayoutRecettes.addView(tableRecetteName);
                 }
 
-                reloadRecetteAndProduit(recetteSelect.getLibelleRecette(), listProduit, listContenirRecettes);
+            } else {
+                LinearLayout nothingRecette = new LinearLayout(this);
+
+                TextView infoText = new TextView(this);
+                infoText.setText("Aucune recette n'est disponibe, vous pouvez en créer une !");
+                nothingRecette.addView(infoText);
+
+                tableLayoutRecettes.addView(nothingRecette);
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -297,21 +253,134 @@ public class RecettesActivity extends AppCompatActivity {
         linker.close();
     }
 
+    public void removeRecettePopup(Recettes recette) {
+        AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(this);
+        infoRecettePopup.setTitle("Etes vous sur de vouloir supprimer "+recette.getLibelleRecette()+" ?");
+
+        infoRecettePopup.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                removeRecette(recette);
+            }
+        });
+
+        infoRecettePopup.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Log.i(TAG, "Non");
+            }
+        });
+
+        infoRecettePopup.show();
+    }
+
+    public void removeRecette(Recettes recette) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Recettes, Integer> daoRecettes = linker.getDao( Recettes.class );
+            Dao<ListesRecettes, Integer> daoListesRecettes = linker.getDao( ListesRecettes.class );
+            Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao( ContenirRecettes.class );
+            Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
+
+            List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
+            List<ListesRecettes> listListesRecettes = daoListesRecettes.queryForAll();
+            List<Listes> listListes = daoListes.queryForAll();
+
+            for(ContenirRecettes contenirRecette : listContenirRecettes) {
+                Recettes recetteSelect = contenirRecette.getRecette();
+                if(recetteSelect.getIdRecette() == recette.getIdRecette()) {
+                    for(Listes liste: listListes) {
+                        for(ListesRecettes listesRecette : listListesRecettes) {
+                            if(liste.getIdListe() == listesRecette.getListe().getIdListe()) {
+                                daoContenirRecettes.delete(contenirRecette);
+                                daoListesRecettes.delete(listesRecette);
+                                daoListes.delete(liste);
+                                daoRecettes.delete(recette);
+                            }
+                        }
+                    }
+                }
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
+    }
+
+    public void editRecettePopup(Recettes recette) {
+        AlertDialog.Builder updateRecettePopup = new AlertDialog.Builder(this);
+        updateRecettePopup.setTitle("Voulez vous mettre à jour "+recette.getLibelleRecette()+" ?");
+
+        LinearLayout linearLayout = new LinearLayout(this);
+
+        TextView libelle = new TextView(this);
+        libelle.setText("Nom de la recette: ");
+        linearLayout.addView(libelle);
+
+        EditText libelleText = new EditText(this);
+        linearLayout.addView(libelleText);
+
+        updateRecettePopup.setPositiveButton("Mettre à jour", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                editRecette(recette, libelleText.getText().toString());
+            }
+        });
+
+        updateRecettePopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                Log.i(TAG, "Retour");
+            }
+        });
+
+        updateRecettePopup.show();
+    }
+
+    public void editRecette(Recettes recette, String libelle) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Recettes, Integer> daoRecettes = linker.getDao( Recettes.class );
+
+            Recettes recetteChange = daoRecettes.queryForId(recette.getIdRecette());
+            recetteChange.setLibelleRecette(libelle);
+            daoRecettes.update(recetteChange);
+
+            reloadPageAll();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
+    }
+
+    public void reloadPageAll() {
+
+        tableLayoutRecettes.removeAllViews();
+
+        getRecettes();
+
+    }
+
+    public void reloadPopupInfo() {
+
+
+
+
+
+
+
+    }
+
     public void infoRecette(Recettes recette) {
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
             AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(this);
-            infoRecettePopup.setTitle("Voulez-vous modifier les produits ajoutés à la recette ?");
+            infoRecettePopup.setTitle("Information sur la recette");
     
             TableLayout tableLayout = new TableLayout(this);
             
             Dao<Produits, Integer> daoProduits = linker.getDao( Produits.class );
             Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao( ContenirRecettes.class );
-            Dao<Recettes, Integer> daoRecettes = linker.getDao( Recettes.class );
 
             List<Produits> listProduit = daoProduits.queryForAll();
             List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
-            List<Recettes> listRecettes = daoRecettes.queryForAll();
 
             for(ContenirRecettes contenirRecette:listContenirRecettes) {
                 Recettes recetteSelect = contenirRecette.getRecette();
@@ -337,9 +406,7 @@ public class RecettesActivity extends AppCompatActivity {
                                    boolean checked = checkBox.isChecked();
                                    if (!checked){
                                        removeProduitRecette(produit);
-                                       tableLayoutRecettes.removeAllViews();
-                                       getRecettesAfterSelect();
-                                       reloadRecetteAndProduit(listRecettes.get(listRecettes.size()-1).getLibelleRecette(), listProduit, listContenirRecettes);
+
                                    }
                                }
                            });
@@ -361,125 +428,6 @@ public class RecettesActivity extends AppCompatActivity {
             }
 
             infoRecettePopup.show();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        linker.close();
-    }
-
-    public void selectRecette(int idRecette, String libelle, List<Produits> listProduits, List<ContenirRecettes> listContenirRecettes) {
-        Log.i(TAG, "TTTTTT"+libelle+"TTTTTT"+idRecette+"TTTTTT");
-        selectRecette = idRecette;
-        tableLayoutRecettes.removeAllViews();
-        getRecettesAfterSelect();
-        reloadRecetteAndProduit(libelle, listProduits, listContenirRecettes);
-
-    }
-
-    public void getRecettesAfterSelect() {
-        DataBaseLinker linker = new DataBaseLinker(this);
-        try {
-            Dao<Recettes, Integer> daoRecettes = linker.getDao( Recettes.class );
-            Dao<Produits, Integer> daoProduits = linker.getDao( Produits.class );
-            Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao( ContenirRecettes.class );
-
-            List<Recettes> listRecette = daoRecettes.queryForAll();
-            List<Produits> listProduit = daoProduits.queryForAll();
-            List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
-
-            if(listRecette.size() != 0) {
-
-                Recettes recetteSelect = daoRecettes.queryForId(selectRecette);
-
-                textViewSelectRecette.setText("Recettes sélectionné: "+recetteSelect.getLibelleRecette());
-
-                for (Recettes recette: listRecette) {
-                    LinearLayout tableRecetteName = new LinearLayout(this);
-
-                    // LIBELLE DE LA RECETTE
-
-                    TextView libelleRecette = new TextView(this);
-                    libelleRecette.setText(recette.getLibelleRecette());
-                    tableRecetteName.addView(libelleRecette);
-
-                    // BUTTON SELECT DE LA RECETTE
-
-                    if(selectRecette != recette.getIdRecette()) {
-                        Button buttonSelect = new Button(this);
-                        buttonSelect.setText("SELECT");
-                        buttonSelect.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                selectRecette(recette.getIdRecette(), recette.getLibelleRecette(), listProduit, listContenirRecettes);
-                            }
-                        });
-
-                        tableRecetteName.addView(buttonSelect);
-                    }
-
-                    // BUTTON REMOVE DE LA RECETTE
-
-                    Button buttonRemove = new Button(this);
-                    buttonRemove.setText("SUPPRIMER");
-                    buttonRemove.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            removeRecette(recette);
-                        }
-                    });
-
-                    tableRecetteName.addView(buttonRemove);
-
-                    // BUTTON INFO DE LA RECETTE
-
-                    Button buttonInfo = new Button(this);
-                    buttonInfo.setText("INFO");
-                    buttonInfo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            infoRecette(recette);
-                        }
-                    });
-
-                    tableRecetteName.addView(buttonInfo);
-
-                    tableLayoutRecettes.addView(tableRecetteName);
-                }
-
-                reloadRecetteAndProduit(recetteSelect.getLibelleRecette(), listProduit, listContenirRecettes);
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        linker.close();
-    }
-
-    public void removeRecette(Recettes recette) {
-        DataBaseLinker linker = new DataBaseLinker(this);
-        try {
-            Dao<Recettes, Integer> daoRecettes = linker.getDao( Recettes.class );
-            Dao<Produits, Integer> daoProduits = linker.getDao( Produits.class );
-            Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao( ContenirRecettes.class );
-
-            List<Recettes> listRecette = daoRecettes.queryForAll();
-            List<Produits> listProduits = daoProduits.queryForAll();
-            List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
-
-            if (recette != null) {
-                if (recette.getIdRecette() == selectRecette) {
-                    if(listRecette.size() == 1) {
-                        selectRecette = 0;
-                        reloadRecetteAndProduit("Aucune recette", listProduits, listContenirRecettes);
-                        tableLayoutRecettes.removeAllViews();
-                        getRecettesAfterSelect();
-                    } else {
-                        selectRecette = listRecette.get(listRecette.size()-1).getIdRecette();
-                        reloadRecetteAndProduit(recette.getLibelleRecette(), listProduits, listContenirRecettes);
-                        tableLayoutRecettes.removeAllViews();
-                        getRecettesAfterSelect();
-                    }
-                }
-            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -578,7 +526,8 @@ public class RecettesActivity extends AppCompatActivity {
             Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao(ContenirRecettes.class);
             Dao<Recettes, Integer> daoRecettes = linker.getDao(Recettes.class);
 
-            Recettes recetteSelect = daoRecettes.queryForId(selectRecette);
+            //Recettes recetteSelect = daoRecettes.queryForId(selectRecette);
+            Recettes recetteSelect = daoRecettes.queryForId(1);
 
             ContenirRecettes contenirRecette = new ContenirRecettes();
             contenirRecette.setQuantite(1);
@@ -600,7 +549,8 @@ public class RecettesActivity extends AppCompatActivity {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
 
             if (produit != null) {
-                Recettes recette = daoRecettes.queryForId(selectRecette);
+                //Recettes recette = daoRecettes.queryForId(selectRecette);
+                Recettes recette = daoRecettes.queryForId(1);
                 ContenirRecettes contenirRecette = daoContenirRecettes.queryForId(recette.getIdRecette());
                 Produits produitSelect = contenirRecette.getProduit();
 
