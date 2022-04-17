@@ -415,84 +415,76 @@ public class RecettesActivity extends AppCompatActivity {
             List<Produits> listProduit = daoProduits.queryForAll();
             List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
 
-            for(ContenirRecettes contenirRecette:listContenirRecettes) {
-                if(contenirRecette.getRecette().getIdRecette() == recette.getIdRecette()) {
-                    for(Produits produit: listProduit) {
-                       if(contenirRecette.getProduit().getIdProduit() == produit.getIdProduit()) {
-                           LinearLayout tableRow = new LinearLayout(this);
-                           TextView libelle = new TextView(this);
-                           EditText quantite = new EditText(this);
-                           CheckBox checkBox = new CheckBox(this);
+            if(listProduit.size() != 0) {
+                for(Produits produit : listProduit) {
+                    if(listContenirRecettes.size() != 0) {
+                        for(ContenirRecettes contenirRecette : listContenirRecettes) {
+                            if(produit.getIdProduit() == contenirRecette.getProduit().getIdProduit()) {
+                                LinearLayout tableRow = new LinearLayout(this);
+                                TextView libelle = new TextView(this);
+                                EditText quantite = new EditText(this);
+                                CheckBox checkBox = new CheckBox(this);
 
-                           libelle.setText(produit.getLibelle());
-                           quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-                           quantite.setText(""+contenirRecette.getQuantite());
-                           checkBox.setChecked(true);
+                                libelle.setText(produit.getLibelle());
+                                quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                                quantite.setText(""+contenirRecette.getQuantite());
+                                checkBox.setChecked(true);
 
-                           checkBox.setOnClickListener(new View.OnClickListener() {
-                               @Override
-                               public void onClick(View v) {
-                                   boolean checked = checkBox.isChecked();
-                                   if (!checked){
-                                       removeProduitRecette(produit, recette);
-                                   }
-                               }
-                           });
+                                checkBox.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        boolean checked = checkBox.isChecked();
+                                        if (!checked){
+                                            removeProduitRecette(produit, recette);
+                                        }
+                                    }
+                                });
 
-                           textSearchProduitYes.addTextChangedListener(new TextWatcher() {
-                               public void afterTextChanged(Editable s) {}
-                               public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                               public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                   linearLayoutYes.removeAllViews();
-                                   if(s != "" || s != " ") {
-                                       if((produit.getLibelle().toLowerCase()).contains(s.toString().toLowerCase())) {
-                                           libelle.setText(produit.getLibelle());
-                                           quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-                                           quantite.setText(""+contenirRecette.getQuantite());
-                                           checkBox.setChecked(true);
+                                textSearchProduitYes.addTextChangedListener(new TextWatcher() {
+                                    public void afterTextChanged(Editable s) {}
+                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                        linearLayoutYes.removeAllViews();
+                                        if(s != "" || s != " ") {
+                                            if((produit.getLibelle().toLowerCase()).contains(s.toString().toLowerCase())) {
+                                                libelle.setText(produit.getLibelle());
+                                                quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                                                quantite.setText(""+contenirRecette.getQuantite());
+                                                checkBox.setChecked(true);
 
-                                           checkBox.setOnClickListener(new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View v) {
-                                                   boolean checked = checkBox.isChecked();
-                                                   if (!checked){
-                                                       removeProduitRecette(produit, recette);
-                                                   }
-                                               }
-                                           });
-                                       }
-                                   } else {
-                                       libelle.setText(produit.getLibelle());
-                                       quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-                                       quantite.setText(""+contenirRecette.getQuantite());
-                                       checkBox.setChecked(true);
+                                                checkBox.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        boolean checked = checkBox.isChecked();
+                                                        if (!checked){
+                                                            removeProduitRecette(produit, recette);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        } else {
+                                            libelle.setText(produit.getLibelle());
+                                            quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                                            quantite.setText(""+contenirRecette.getQuantite());
+                                            checkBox.setChecked(true);
 
-                                       checkBox.setOnClickListener(new View.OnClickListener() {
-                                           @Override
-                                           public void onClick(View v) {
-                                               boolean checked = checkBox.isChecked();
-                                               if (!checked){
-                                                   removeProduitRecette(produit, recette);
-                                               }
-                                           }
-                                       });
-                                   }
-                               }
-                           });
-                           tableRow.addView(checkBox);
-                           tableRow.addView(libelle);
-                           tableRow.addView(quantite);
-                           linearLayoutYes.addView(tableRow);
-                       }
-                    }
-                }
-            }
-
-            for(Produits produit: listProduit) {
-                if(listContenirRecettes.size() != 0) {
-                    for(ContenirRecettes contenirRecette:listContenirRecettes) {
-                        if (contenirRecette.getRecette().getIdRecette() == recette.getIdRecette()) {
-                            if(contenirRecette.getProduit().getIdProduit() != produit.getIdProduit()) {
+                                            checkBox.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    boolean checked = checkBox.isChecked();
+                                                    if (!checked){
+                                                        removeProduitRecette(produit, recette);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                                tableRow.addView(checkBox);
+                                tableRow.addView(libelle);
+                                tableRow.addView(quantite);
+                                linearLayoutYes.addView(tableRow);
+                            } else {
                                 LinearLayout tableRow = new LinearLayout(this);
                                 TextView libelle = new TextView(this);
                                 EditText quantite = new EditText(this);
@@ -570,39 +562,57 @@ public class RecettesActivity extends AppCompatActivity {
                                 linearLayoutNo.addView(tableRow);
                             }
                         }
-                    }
-                } else {
-                    LinearLayout tableRow = new LinearLayout(this);
-                    TextView libelle = new TextView(this);
-                    EditText quantite = new EditText(this);
-                    CheckBox checkBox = new CheckBox(this);
+                    } else {
+                        LinearLayout tableRow = new LinearLayout(this);
+                        TextView libelle = new TextView(this);
+                        EditText quantite = new EditText(this);
+                        CheckBox checkBox = new CheckBox(this);
 
-                    libelle.setText(produit.getLibelle());
-                    quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                        libelle.setText(produit.getLibelle());
 
-                    checkBox.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            boolean checked = checkBox.isChecked();
-                            if (checked){
-                                int qtn;
-                                if(quantite.getText().toString().equals("0") || quantite.getText().toString().equals("")) {
-                                    qtn = 1;
-                                } else {
-                                    qtn = Integer.parseInt(quantite.getText().toString());
+                        checkBox.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                boolean checked = checkBox.isChecked();
+                                if (checked){
+                                    int qtn;
+                                    if(quantite.getText().toString().equals("0") || quantite.getText().toString().equals("")) {
+                                        qtn = 1;
+                                    } else {
+                                        qtn = Integer.parseInt(quantite.getText().toString());
+                                    }
+                                    addProduitRecette(produit, recette, qtn);
                                 }
-                                addProduitRecette(produit, recette, qtn);
                             }
-                        }
-                    });
+                        });
 
-                    textSearchProduitNo.addTextChangedListener(new TextWatcher() {
-                        public void afterTextChanged(Editable s) {}
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                            linearLayoutNo.removeAllViews();
-                            if(s != "" || s != " ") {
-                                if((produit.getLibelle().toLowerCase()).contains(s.toString().toLowerCase())) {
+                        textSearchProduitNo.addTextChangedListener(new TextWatcher() {
+                            public void afterTextChanged(Editable s) {}
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                linearLayoutNo.removeAllViews();
+                                if(s != "" || s != " ") {
+                                    if((produit.getLibelle().toLowerCase()).contains(s.toString().toLowerCase())) {
+                                        libelle.setText(produit.getLibelle());
+                                        quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+
+                                        checkBox.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                boolean checked = checkBox.isChecked();
+                                                if (checked){
+                                                    int qtn;
+                                                    if(quantite.getText().toString().equals("0") || quantite.getText().toString().equals("")) {
+                                                        qtn = 1;
+                                                    } else {
+                                                        qtn = Integer.parseInt(quantite.getText().toString());
+                                                    }
+                                                    addProduitRecette(produit, recette, qtn);
+                                                }
+                                            }
+                                        });
+                                    }
+                                } else {
                                     libelle.setText(produit.getLibelle());
                                     quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
 
@@ -622,33 +632,22 @@ public class RecettesActivity extends AppCompatActivity {
                                         }
                                     });
                                 }
-                            } else {
-                                libelle.setText(produit.getLibelle());
-                                quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-
-                                checkBox.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        boolean checked = checkBox.isChecked();
-                                        if (checked){
-                                            int qtn;
-                                            if(quantite.getText().toString().equals("0") || quantite.getText().toString().equals("")) {
-                                                qtn = 1;
-                                            } else {
-                                                qtn = Integer.parseInt(quantite.getText().toString());
-                                            }
-                                            addProduitRecette(produit, recette, qtn);
-                                        }
-                                    }
-                                });
                             }
-                        }
-                    });
-                    tableRow.addView(checkBox);
-                    tableRow.addView(libelle);
-                    tableRow.addView(quantite);
-                    linearLayoutNo.addView(tableRow);
+                        });
+                        tableRow.addView(checkBox);
+                        tableRow.addView(libelle);
+                        tableRow.addView(quantite);
+                        linearLayoutNo.addView(tableRow);
+                    }
                 }
+            } else {
+                TableRow nothingProduit = new TableRow(this);
+
+                TextView textNothing = new TextView(this);
+                textNothing.setText("Il n'y a aucun produit de disponible!");
+                nothingProduit.addView(textNothing);
+
+                linearLayoutYes.addView(nothingProduit);
             }
 
             infoRecettePopup.setView(infoRecettePopupView);

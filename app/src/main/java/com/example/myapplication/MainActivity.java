@@ -55,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         tablayoutSearchRecettes = findViewById(R.id.tablayoutSearchRecettes);
         getSupportActionBar().hide();
 
+        //deleteDatabase("listeDeCourses.db");
+
         getSearch();
 
         getMenuSwitch();
@@ -71,7 +73,13 @@ public class MainActivity extends AppCompatActivity {
 
             for(Listes listes : listListes) {
                 for (ListesProduits listesProduits : listListesProduits) {
-                    if (listes.getIdListe() == listesProduits.getListe().getIdListe()) {
+                    if(listesProduits.getListe() != null) {
+                        if (listes.getIdListe() == listesProduits.getListe().getIdListe()) {
+                            if (listesProduits.getProduit().getIdProduit() == produit.getIdProduit()) {
+                                return false;
+                            }
+                        }
+                    } else {
                         if (listesProduits.getProduit().getIdProduit() == produit.getIdProduit()) {
                             return false;
                         }
@@ -99,7 +107,13 @@ public class MainActivity extends AppCompatActivity {
 
             for(Listes listes : listListes) {
                 for(ListesRecettes listesRecettes : listListesRecettes) {
-                    if(listes.getIdListe() == listesRecettes.getRecette().getIdRecette()) {
+                    if(listesRecettes.getListe() != null) {
+                        if(listes.getIdListe() == listesRecettes.getListe().getIdListe()) {
+                            if(listesRecettes.getRecette().getIdRecette() == recette.getIdRecette()) {
+                                return false;
+                            }
+                        }
+                    } else {
                         if(listesRecettes.getRecette().getIdRecette() == recette.getIdRecette()) {
                             return false;
                         }
@@ -196,10 +210,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         addRecetteCheck(recette.getIdRecette(), qtn);
                     }
-                    else{
-                        removeRecetteCheck(recette.getIdRecette());
-                    }
-
                 }
             });
 
@@ -229,8 +239,10 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(this);
         infoRecettePopup.setTitle("Information de la recette "+recette.getLibelleRecette()+" :");
 
+        TableLayout tableLayout = new TableLayout(this);
+
         for(ContenirRecettes contenirRecette : listContenirRecettes) {
-            if(contenirRecette.getRecette() == recette) {
+            if(contenirRecette.getRecette().getIdRecette() == recette.getIdRecette()) {
                 Produits produit = contenirRecette.getProduit();
 
                 LinearLayout linearLayoutProduit = new LinearLayout(this);
@@ -239,9 +251,11 @@ public class MainActivity extends AppCompatActivity {
                 libelle.setText("Produit: " + produit.getLibelle() + " | Quantite: " + contenirRecette.getQuantite());
                 linearLayoutProduit.addView(libelle);
 
-                infoRecettePopup.setView(linearLayoutProduit);
+                tableLayout.addView(linearLayoutProduit);
             }
         }
+
+        infoRecettePopup.setView(tableLayout);
 
         infoRecettePopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -277,10 +291,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         addProduitCheck(produit.getIdProduit(), qtn);
                     }
-                    else{
-                        removeProduitCheck(produit.getIdProduit());
-                    }
-
                 }
             });
 
@@ -349,21 +359,15 @@ public class MainActivity extends AppCompatActivity {
 
             List<Listes> listListes = daoListes.queryForAll();
 
+            Listes liste = listListes.get(listListes.size()-1);
             Produits produit = daoProduits.queryForId(idProduit);
 
+            ListesProduits listesProduits = new ListesProduits();
+            listesProduits.setProduit(produit);
+            listesProduits.setListe(liste);
+            daoListesProduits.create(listesProduits);
 
-
-            if(listListes.size() != 0) {
-                int idListe = listListes.get(1).getIdListe();
-                Listes liste = daoListes.queryForId(idListe);
-
-                ListesProduits listesProduits = new ListesProduits();
-                listesProduits.setProduit(produit);
-                listesProduits.setListe(liste);
-                daoListesProduits.create(listesProduits);
-
-                reloadAllPage();
-            }
+            reloadAllPage();
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -374,7 +378,6 @@ public class MainActivity extends AppCompatActivity {
     public void addRecetteCheck(int idRecette, int quantite) {
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
-
             Dao<Recettes, Integer> daoRecettes = linker.getDao(Recettes.class);
             Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);
             Dao<ListesRecettes, Integer> daoListesRecettes = linker.getDao(ListesRecettes.class);
@@ -387,7 +390,7 @@ public class MainActivity extends AppCompatActivity {
             List<Listes> listListes = daoListes.queryForAll();
 
             Recettes recette = daoRecettes.queryForId(idRecette);
-            Listes liste = daoListes.queryForId(listListes.size()-1);
+            Listes liste = listListes.get(listListes.size()-1);
 
             ListesRecettes listesRecettes = new ListesRecettes();
             listesRecettes.setRecette(recette);
@@ -396,60 +399,6 @@ public class MainActivity extends AppCompatActivity {
 
             reloadAllPage();
 
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        linker.close();
-    }
-
-    public void removeProduitCheck(int idProduit) {
-        DataBaseLinker linker = new DataBaseLinker(this);
-        try {
-            Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);
-            Dao<ListesProduits, Integer> daoListesProduits = linker.getDao(ListesProduits.class);
-
-            List<ListesProduits> listListesProduits = daoListesProduits.queryForAll();
-
-            for(ListesProduits listesProduits : listListesProduits) {
-                Produits produitSelect = listesProduits.getProduit();
-                if(produitSelect.getIdProduit() == idProduit) {
-                    Listes listes = daoListes.queryForId(listesProduits.getListe().getIdListe());
-                    if (listes != null) {
-                        ListesProduits listesProduitsSelect = daoListesProduits.queryForId(listesProduits.getIdListeProduits());
-                        daoListes.delete(listes);
-                        daoListesProduits.delete(listesProduitsSelect);
-
-                        reloadAllPage();
-                    }
-                }
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        linker.close();
-    }
-
-    public void removeRecetteCheck(int idRecette) {
-        DataBaseLinker linker = new DataBaseLinker(this);
-        try {
-            Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);
-            Dao<ListesRecettes, Integer> daoListesRecettes = linker.getDao(ListesRecettes.class);
-
-            List<ListesRecettes> listListesRecettes = daoListesRecettes.queryForAll();
-
-            for(ListesRecettes listesRecettes : listListesRecettes) {
-                Recettes produitSelect = listesRecettes.getRecette();
-                if(produitSelect.getIdRecette() == idRecette) {
-                    Listes listes = daoListes.queryForId(listesRecettes.getListe().getIdListe());
-                    if (listes != null) {
-                        ListesRecettes listesRecetteSelect = daoListesRecettes.queryForId(listesRecettes.getIdListesRecettes());
-                        daoListes.delete(listes);
-                        daoListesRecettes.delete(listesRecetteSelect);
-
-                        reloadAllPage();
-                    }
-                }
-            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
