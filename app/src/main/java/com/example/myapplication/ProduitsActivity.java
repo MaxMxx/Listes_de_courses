@@ -83,19 +83,6 @@ public class ProduitsActivity extends AppCompatActivity {
 
         tableLayout.addView(tableRowLibelle);
 
-        // MODIFICATION QUANTITE PRODUIT
-
-        TableRow tableRowQuantite = new TableRow(this);
-
-        TextView infoQuantite = new TextView(this);
-        infoQuantite.setText("Quantite: ");
-        tableRowQuantite.addView(infoQuantite);
-
-        EditText createQuantite = new EditText(this);
-        tableRowQuantite.addView(createQuantite);
-
-        tableLayout.addView(tableRowQuantite);
-
         // ADD VIEW IN POPUP EDIT
 
         createPopup.setView(tableLayout);
@@ -103,7 +90,7 @@ public class ProduitsActivity extends AppCompatActivity {
         //deletePopup.setMessage("Cliquez sur oui ou non");
         createPopup.setPositiveButton("Créer", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) { ;
-                createProduit(createLibelle.getText().toString(), createQuantite.getText().toString());
+                createProduit(createLibelle.getText().toString());
             }
         });
         createPopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
@@ -114,14 +101,13 @@ public class ProduitsActivity extends AppCompatActivity {
         createPopup.show();
     }
 
-    public void createProduit(String libelle, String quantite) {
+    public void createProduit(String libelle) {
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
 
             Produits produit = new Produits();
             produit.setLibelle(libelle);
-            produit.setQuantite(Integer.parseInt(quantite));
             daoProduits.create(produit);
 
             reloadProduitsLayout();
@@ -182,7 +168,7 @@ public class ProduitsActivity extends AppCompatActivity {
         TableRow tableRowProduit = new TableRow(this);
 
         TextView value = new TextView(this);
-        value.setText(produit.getLibelle() + " " + produit.getQuantite());
+        value.setText(produit.getLibelle());
 
         tableRowProduit.addView(value);
 
@@ -284,20 +270,6 @@ public class ProduitsActivity extends AppCompatActivity {
 
                 tableLayout.addView(tableRowLibelle);
 
-                // MODIFICATION QUANTITE PRODUIT
-
-                TableRow tableRowQuantite = new TableRow(this);
-
-                TextView infoQuantite = new TextView(this);
-                infoQuantite.setText("Quantite: ");
-                tableRowQuantite.addView(infoQuantite);
-
-                EditText changeQuantite = new EditText(this);
-                changeQuantite.setText(""+produit.getQuantite());
-                tableRowQuantite.addView(changeQuantite);
-
-                tableLayout.addView(tableRowQuantite);
-
                 // ADD VIEW IN POPUP EDIT
 
                 editPopup.setView(tableLayout);
@@ -305,7 +277,7 @@ public class ProduitsActivity extends AppCompatActivity {
                 //deletePopup.setMessage("Cliquez sur oui ou non");
                 editPopup.setPositiveButton("Mettre à jour", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) { ;
-                        createProduit(idProduit, changeLibelle.getText().toString(), Integer.parseInt(changeQuantite.getText().toString()));
+                        createProduit(idProduit, changeLibelle.getText().toString());
                     }
                 });
                 editPopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
@@ -323,7 +295,7 @@ public class ProduitsActivity extends AppCompatActivity {
         linker.close();
     }
 
-    public void createProduit(int idProduit, String libelle, int quantite) {
+    public void createProduit(int idProduit, String libelle) {
         DataBaseLinker linker = new DataBaseLinker(this);
         try {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
@@ -331,7 +303,6 @@ public class ProduitsActivity extends AppCompatActivity {
             Produits produit = daoProduits.queryForId(idProduit);
 
             produit.setLibelle(libelle);
-            produit.setQuantite(quantite);
             daoProduits.update(produit);
 
             reloadProduitsLayout();
