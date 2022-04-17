@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +58,62 @@ public class MainActivity extends AppCompatActivity {
         getSearch();
 
         getMenuSwitch();
+    }
+
+    public boolean verifInListeProduit(Produits produit) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
+            Dao<ListesProduits, Integer> daoListesProduits = linker.getDao( ListesProduits.class );
+
+            List<Listes> listListes = daoListes.queryForAll();
+            List<ListesProduits> listListesProduits = daoListesProduits.queryForAll();
+
+            for(Listes listes : listListes) {
+                for (ListesProduits listesProduits : listListesProduits) {
+                    if (listes.getIdListe() == listesProduits.getListe().getIdListe()) {
+                        if (listesProduits.getProduit().getIdProduit() == produit.getIdProduit()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
+        return true;
+    }
+
+    public boolean verifInListeRecette(Recettes recette) {
+        DataBaseLinker linker = new DataBaseLinker(this);
+        try {
+            Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
+            Dao<ListesRecettes, Integer> daoListesRecettes = linker.getDao( ListesRecettes.class );
+
+            List<Listes> listListes = daoListes.queryForAll();
+            List<ListesRecettes> listListesRecettes = daoListesRecettes.queryForAll();
+
+            for(Listes listes : listListes) {
+                for(ListesRecettes listesRecettes : listListesRecettes) {
+                    if(listes.getIdListe() == listesRecettes.getRecette().getIdRecette()) {
+                        if(listesRecettes.getRecette().getIdRecette() == recette.getIdRecette()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        linker.close();
+        return true;
     }
 
     public void getSearch() {
@@ -119,44 +176,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getRecette(Recettes recette, List<ContenirRecettes> listContenirRecettes) {
-        LinearLayout linearLayoutRecette = new LinearLayout(this);
+        if(verifInListeRecette(recette)) {
+            LinearLayout linearLayoutRecette = new LinearLayout(this);
 
-        EditText quantite = new EditText(this);
+            EditText quantite = new EditText(this);
+            quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
 
-        CheckBox checkBox = new CheckBox(this);
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = checkBox.isChecked();
-                if (checked){
-                    addRecetteCheck(recette.getIdRecette(), Integer.parseInt(quantite.getText().toString()));
+            CheckBox checkBox = new CheckBox(this);
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean checked = checkBox.isChecked();
+                    if (checked){
+                        int qtn;
+                        if(quantite.getText().toString().equals("0") || quantite.getText().toString().equals("")) {
+                            qtn = 1;
+                        } else {
+                            qtn = Integer.parseInt(quantite.getText().toString());
+                        }
+                        addRecetteCheck(recette.getIdRecette(), qtn);
+                    }
+                    else{
+                        removeRecetteCheck(recette.getIdRecette());
+                    }
+
                 }
-                else{
-                    removeRecetteCheck(recette.getIdRecette());
+            });
+
+            TextView libelle = new TextView(this);
+            libelle.setText(recette.getLibelleRecette());
+            libelle.setTextSize(20);
+
+            Button buttonInfo = new Button(this);
+            buttonInfo.setText("Details");
+            buttonInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    infoRecettes(recette, listContenirRecettes);
                 }
+            });
 
-            }
-        });
+            linearLayoutRecette.addView(checkBox);
+            linearLayoutRecette.addView(libelle);
+            linearLayoutRecette.addView(quantite);
+            linearLayoutRecette.addView(buttonInfo);
 
-        TextView libelle = new TextView(this);
-        libelle.setText(recette.getLibelleRecette());
-        libelle.setTextSize(20);
-
-        Button buttonInfo = new Button(this);
-        buttonInfo.setText("Details");
-        buttonInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                infoRecettes(recette, listContenirRecettes);
-            }
-        });
-
-        linearLayoutRecette.addView(checkBox);
-        linearLayoutRecette.addView(libelle);
-        linearLayoutRecette.addView(quantite);
-        linearLayoutRecette.addView(buttonInfo);
-
-        tablayoutSearchRecettes.addView(linearLayoutRecette);
+            tablayoutSearchRecettes.addView(linearLayoutRecette);
+        }
     }
 
     public void infoRecettes(Recettes recette, List<ContenirRecettes> listContenirRecettes) {
@@ -187,34 +253,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getProduits(Produits produit) {
-        TableRow tableRowProduit = new TableRow(this);
+        if(verifInListeProduit(produit)) {
+            TableRow tableRowProduit = new TableRow(this);
 
-        TextView value = new TextView(this);
-        value.setText(produit.getLibelle());
-        value.setTextSize(20);
+            TextView value = new TextView(this);
+            value.setText(produit.getLibelle());
+            value.setTextSize(20);
 
-        EditText quantite = new EditText(this);
+            EditText quantite = new EditText(this);
+            quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
 
-        CheckBox checkBox = new CheckBox(this);
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                boolean checked = checkBox.isChecked();
-                if (checked){
-                    addProduitCheck(produit.getIdProduit(), Integer.parseInt(quantite.getText().toString()));
+            CheckBox checkBox = new CheckBox(this);
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    boolean checked = checkBox.isChecked();
+                    if (checked){
+                        int qtn;
+                        if(quantite.getText().toString().equals("0") || quantite.getText().toString().equals("")) {
+                            qtn = 1;
+                        } else {
+                            qtn = Integer.parseInt(quantite.getText().toString());
+                        }
+                        addProduitCheck(produit.getIdProduit(), qtn);
+                    }
+                    else{
+                        removeProduitCheck(produit.getIdProduit());
+                    }
+
                 }
-                else{
-                    removeProduitCheck(produit.getIdProduit());
-                }
+            });
 
-            }
-        });
+            tableRowProduit.addView(checkBox);
+            tableRowProduit.addView(value);
+            tableRowProduit.addView(quantite);
 
-        tableRowProduit.addView(checkBox);
-        tableRowProduit.addView(value);
-        tableRowProduit.addView(quantite);
-
-        tablayoutSearchProduits.addView(tableRowProduit);
+            tablayoutSearchProduits.addView(tableRowProduit);
+        }
     }
 
     public void getMenuSwitch() {
@@ -275,14 +350,20 @@ public class MainActivity extends AppCompatActivity {
             List<Listes> listListes = daoListes.queryForAll();
 
             Produits produit = daoProduits.queryForId(idProduit);
-            Listes liste = daoListes.queryForId(listListes.size()-1);
 
-            ListesProduits listesProduits = new ListesProduits();
-            listesProduits.setProduit(produit);
-            listesProduits.setListe(liste);
-            daoListesProduits.create(listesProduits);
 
-            reloadAllPage();
+
+            if(listListes.size() != 0) {
+                int idListe = listListes.get(1).getIdListe();
+                Listes liste = daoListes.queryForId(idListe);
+
+                ListesProduits listesProduits = new ListesProduits();
+                listesProduits.setProduit(produit);
+                listesProduits.setListe(liste);
+                daoListesProduits.create(listesProduits);
+
+                reloadAllPage();
+            }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();

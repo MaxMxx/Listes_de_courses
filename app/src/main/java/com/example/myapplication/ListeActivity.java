@@ -31,6 +31,7 @@ import java.util.List;
 
 public class ListeActivity extends AppCompatActivity {
 
+    private static final String TAG = "ListeActivity";
     private TableLayout containerListe;
     private Button buttonSupprimerListe;
 
@@ -43,8 +44,6 @@ public class ListeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.liste);
-        this.deleteDatabase("listeDeCourses.db");
-        DataBaseLinker linker = new DataBaseLinker(this);
         getSupportActionBar().hide();
 
         containerListe = findViewById(R.id.container_liste);
@@ -116,15 +115,24 @@ public class ListeActivity extends AppCompatActivity {
             List<Produits> listProduits = daoProduits.queryForAll();
             List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
 
+            Log.i(TAG, "getListeAll: 0");
+
             if(listListes.size() != 0) {
                 for(Listes liste: listListes) {
+                    Log.i(TAG, "getListeAll: 1");
                     for(ListesProduits listesProduit: listListesProduits) {
+                        Log.i(TAG, "getListeAll: 2");
                         Listes listeSelect = listesProduit.getListe();
                         if(liste.getIdListe() == listeSelect.getIdListe()) {
+                            Log.i(TAG, "getListeAll: 3");
                             for(Produits produit: listProduits) {
+                                Log.i(TAG, "getListeAll: 4");
                                 Produits produitSelect = listesProduit.getProduit();
                                 if(produitSelect.getIdProduit() == produit.getIdProduit()) {
+                                    Log.i(TAG, "getListeAll: 5");
                                     LinearLayout linearLayout = new LinearLayout(this);
+
+
 
                                     TextView libelle = new TextView(this);
                                     if(listeSelect.isCart()) {
@@ -135,7 +143,7 @@ public class ListeActivity extends AppCompatActivity {
                                     linearLayout.addView(libelle);
 
                                     EditText quantite = new EditText(this);
-                                    quantite.setText(liste.getQuantite());
+                                    quantite.setText(""+liste.getQuantite());
                                     linearLayout.addView(quantite);
 
                                     CheckBox addCart = new CheckBox(this);
@@ -178,7 +186,7 @@ public class ListeActivity extends AppCompatActivity {
                                                 linearLayout.addView(libelle);
 
                                                 EditText quantite = new EditText(this);
-                                                quantite.setText(liste.getQuantite());
+                                                quantite.setText(""+liste.getQuantite());
                                                 linearLayout.addView(quantite);
 
                                                 Button info = new Button(this);
@@ -339,6 +347,8 @@ public class ListeActivity extends AppCompatActivity {
             List<Listes> listListes = daoListes.queryForAll();
             List<ListesProduits> listListesProduits = daoListesProduits.queryForAll();
             List<ListesRecettes> listListesRecettes = daoListesRecettes.queryForAll();
+
+            Log.i(TAG, "removeAllListeAVANTTTTTTTTTTTTT: "+listListes.size()+" "+listListesRecettes.size()+" "+listListesProduits.size());
 
             for(Listes listes : listListes) {
                 daoListes.delete(listes);

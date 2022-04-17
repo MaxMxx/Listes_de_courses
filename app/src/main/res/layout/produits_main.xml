@@ -52,8 +52,11 @@
     <TableRow
         android:layout_width="336dp"
         android:layout_height="52dp"
-        tools:layout_editor_absoluteX="37dp"
-        tools:layout_editor_absoluteY="117dp">
+        android:layout_marginBottom="560dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/imageView2"
@@ -74,9 +77,10 @@
         android:layout_width="387dp"
         android:layout_height="533dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="187dp"></TableLayout>
+        app:layout_constraintStart_toStartOf="parent"></TableLayout>
 
     <Button
         android:id="@+id/buttonCreateProduit"
