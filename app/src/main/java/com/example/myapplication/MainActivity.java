@@ -256,7 +256,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         infoRecettePopup.setView(tableLayout);
-
         infoRecettePopup.setNegativeButton("Retour", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 Log.i(TAG, "Retour");

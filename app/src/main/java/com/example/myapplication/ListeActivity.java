@@ -137,35 +137,50 @@ public class ListeActivity extends AppCompatActivity {
                                     }
                                     linearLayout.addView(libelle);
 
-                                    EditText quantite = new EditText(this);
-                                    quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-                                    quantite.setText(""+liste.getQuantite());
-                                    linearLayout.addView(quantite);
+                                    if(!listeSelect.isCart()) {
+                                        EditText quantite = new EditText(this);
+                                        quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                                        quantite.setText(""+liste.getQuantite());
+                                        linearLayout.addView(quantite);
 
-                                    quantite.addTextChangedListener(new TextWatcher() {
-                                        public void afterTextChanged(Editable s) {
-                                        }
-
-                                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                        }
-
-                                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                            if(quantite.getText().toString() != "" || quantite.getText().toString() != " " || quantite.getText().toString() != "0") {
-                                                editQuantite(listeSelect, Integer.parseInt(quantite.getText().toString()));
+                                        quantite.addTextChangedListener(new TextWatcher() {
+                                            public void afterTextChanged(Editable s) {
                                             }
-                                        }
-                                    });
 
-                                    Button deleteButton = new Button(this);
-                                    deleteButton.setText("SUPPRIMER");
-                                    deleteButton.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            removeProduit(produit);
-                                        }
-                                    });
+                                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                            }
 
-                                    linearLayout.addView(deleteButton);
+                                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                                boolean verification = true;
+                                                if(s.toString().equals("0")) {
+                                                    verification = false;
+                                                }
+                                                if(s.toString().length() == 0) {
+                                                    verification = false;
+                                                }
+                                                if(verification) {
+                                                    editQuantite(listeSelect, Integer.parseInt(quantite.getText().toString()));
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        TextView quantite = new TextView(this);
+                                        quantite.setText(" "+liste.getQuantite());
+                                        linearLayout.addView(quantite);
+                                    }
+
+                                    if(!listeSelect.isCart()) {
+                                        Button deleteButton = new Button(this);
+                                        deleteButton.setText("SUPPRIMER");
+                                        deleteButton.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                removeProduit(produit);
+                                            }
+                                        });
+
+                                        linearLayout.addView(deleteButton);
+                                    }
 
                                     CheckBox addCart = new CheckBox(this);
                                     if(liste.isCart()) {
@@ -203,24 +218,37 @@ public class ListeActivity extends AppCompatActivity {
                             }
                             linearLayout.addView(libelle);
 
-                            EditText quantite = new EditText(this);
-                            quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
-                            quantite.setText(""+liste.getQuantite());
-                            linearLayout.addView(quantite);
+                            if(!listeSelect.isCart()) {
+                                EditText quantite = new EditText(this);
+                                quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+                                quantite.setText(""+liste.getQuantite());
+                                linearLayout.addView(quantite);
 
-                            quantite.addTextChangedListener(new TextWatcher() {
-                                public void afterTextChanged(Editable s) {
-                                }
-
-                                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                                }
-
-                                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                    if(quantite.getText().toString() != "" || quantite.getText().toString() != " " || quantite.getText().toString() != "0") {
-                                        editQuantite(listeSelect, Integer.parseInt(quantite.getText().toString()));
+                                quantite.addTextChangedListener(new TextWatcher() {
+                                    public void afterTextChanged(Editable s) {
                                     }
-                                }
-                            });
+
+                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                    }
+
+                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                        boolean verification = true;
+                                        if(s.toString().equals("0")) {
+                                            verification = false;
+                                        }
+                                        if(s.toString().length() == 0) {
+                                            verification = false;
+                                        }
+                                        if(verification) {
+                                            editQuantite(listeSelect, Integer.parseInt(quantite.getText().toString()));
+                                        }
+                                    }
+                                });
+                            } else {
+                                TextView quantite = new TextView(this);
+                                quantite.setText(" "+liste.getQuantite());
+                                linearLayout.addView(quantite);
+                            }
 
                             Button info = new Button(this);
                             info.setText("Info");
@@ -232,16 +260,18 @@ public class ListeActivity extends AppCompatActivity {
                             });
                             linearLayout.addView(info);
 
-                            Button deleteButton = new Button(this);
-                            deleteButton.setText("SUPPRIMER");
-                            deleteButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    removeRecette(listesRecettes.getRecette());
-                                }
-                            });
+                            if(!listeSelect.isCart()) {
+                                Button deleteButton = new Button(this);
+                                deleteButton.setText("SUPPRIMER");
+                                deleteButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        removeRecette(listesRecettes.getRecette());
+                                    }
+                                });
 
-                            linearLayout.addView(deleteButton);
+                                linearLayout.addView(deleteButton);
+                            }
 
                             CheckBox addCart = new CheckBox(this);
                             if(liste.isCart()) {
@@ -455,8 +485,6 @@ public class ListeActivity extends AppCompatActivity {
             List<Listes> listListes = daoListes.queryForAll();
             List<ListesProduits> listListesProduits = daoListesProduits.queryForAll();
             List<ListesRecettes> listListesRecettes = daoListesRecettes.queryForAll();
-
-            Log.i(TAG, "removeAllListeAVANTTTTTTTTTTTTT: "+listListes.size()+" "+listListesRecettes.size()+" "+listListesProduits.size());
 
             for(Listes listes : listListes) {
                 daoListes.delete(listes);
