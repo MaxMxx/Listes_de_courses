@@ -75,10 +75,13 @@ public class ProduitsActivity extends AppCompatActivity {
         TableRow tableRowLibelle = new TableRow(this);
 
         TextView infoLibelle = new TextView(this);
-        infoLibelle.setText("Libelle: ");
+        infoLibelle.setText("Nom: ");
+        infoLibelle.setTextSize(18);
         tableRowLibelle.addView(infoLibelle);
 
         EditText createLibelle = new EditText(this);
+        createLibelle.setTextSize(18);
+        createLibelle.setHint("Nom de votre produit");
         tableRowLibelle.addView(createLibelle);
 
         tableLayout.addView(tableRowLibelle);
@@ -175,7 +178,7 @@ public class ProduitsActivity extends AppCompatActivity {
         int idProduit = produit.getIdProduit();
 
         Button deleteProduit = new Button(this);
-        deleteProduit.setText("Delete");
+        deleteProduit.setText("SUPPRIMER");
         deleteProduit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,7 +189,7 @@ public class ProduitsActivity extends AppCompatActivity {
         tableRowProduit.addView(deleteProduit);
 
         Button editProduit = new Button(this);
-        editProduit.setText("Edit");
+        editProduit.setText("MODIFIER");
         editProduit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

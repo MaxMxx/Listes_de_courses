@@ -148,10 +148,13 @@ public class RecettesActivity extends AppCompatActivity {
             TableRow tableRowLibelle = new TableRow(this);
 
             TextView infoLibelle = new TextView(this);
-            infoLibelle.setText("Libelle: ");
+            infoLibelle.setText("Nom: ");
+            infoLibelle.setTextSize(18);
             tableRowLibelle.addView(infoLibelle);
 
             EditText createLibelle = new EditText(this);
+            createLibelle.setTextSize(18);
+            createLibelle.setHint("Nom de votre recette");
             tableRowLibelle.addView(createLibelle);
 
             tableLayout.addView(tableRowLibelle);
@@ -201,7 +204,6 @@ public class RecettesActivity extends AppCompatActivity {
 
             if(listRecette.size() != 0) {
                 for (Recettes recette: listRecette) {
-                    Log.i(TAG, "LIGNE 204: getRecettes: RECETTE AVEC L'ID: "+recette.getIdRecette());
                     LinearLayout tableRecetteName = new LinearLayout(this);
 
                     // LIBELLE DE LA RECETTE
