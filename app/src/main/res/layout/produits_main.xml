@@ -6,48 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ProduitsActivity">
 
-    <TableLayout
-        android:id="@+id/tableLayout"
-        android:layout_width="385dp"
-        android:layout_height="59dp"
-        android:layout_marginBottom="1dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@+id/editTextTextPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/buttonMain"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Main" />
-
-            <Button
-                android:id="@+id/buttonProduits"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Produits" />
-
-            <Button
-                android:id="@+id/buttonRecettes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Recettes" />
-
-            <Button
-                android:id="@+id/buttonListe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Liste" />
-        </TableRow>
-    </TableLayout>
-
 
     <TableRow
         android:id="@+id/tableRow4"

@@ -3,14 +3,22 @@ package com.example.myapplication;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -18,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.Entity.ContenirRecettes;
 import com.example.myapplication.Entity.Listes;
@@ -31,7 +40,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Fragment {
 
     private static final String TAG = "MainActivity";
 
@@ -42,28 +51,21 @@ public class MainActivity extends AppCompatActivity {
     private TableLayout tablayoutSearchProduits;
     private TableLayout tablayoutSearchRecettes;
 
-    private Button buttonMain;
-    private Button buttonProduits;
-    private Button buttonRecettes;
-    private Button buttonListe;
+    private View view;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
-        tablayoutSearchProduits = findViewById(R.id.tablayoutSearchProduits);
-        tablayoutSearchRecettes = findViewById(R.id.tablayoutSearchRecettes);
-        getSupportActionBar().hide();
-
-        //deleteDatabase("listeDeCourses.db");
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.main_activity, container, false);
+        tablayoutSearchProduits = view.findViewById(R.id.tablayoutSearchProduits);
+        tablayoutSearchRecettes = view.findViewById(R.id.tablayoutSearchRecettes);
 
         getSearch();
 
-        getMenuSwitch();
+        return view;
     }
 
     public boolean verifInListeProduit(Produits produit) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesProduits, Integer> daoListesProduits = linker.getDao( ListesProduits.class );
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean verifInListeRecette(Recettes recette) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesRecettes, Integer> daoListesRecettes = linker.getDao( ListesRecettes.class );
@@ -131,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void getSearch() {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Produits, Integer> daoProduits = linker.getDao( Produits.class );
             Dao<Recettes, Integer> daoRecettes = linker.getDao( Recettes.class );
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 getRecette(recette, listContenirRecettes);
             }
 
-            editTextSearch = findViewById(R.id.editTextSearch);
+            editTextSearch = view.findViewById(R.id.editTextSearch);
 
             editTextSearch.addTextChangedListener(new TextWatcher() {
 
@@ -191,12 +193,16 @@ public class MainActivity extends AppCompatActivity {
 
     public void getRecette(Recettes recette, List<ContenirRecettes> listContenirRecettes) {
         if(verifInListeRecette(recette)) {
-            LinearLayout linearLayoutRecette = new LinearLayout(this);
+            LinearLayout linearLayoutRecette = new LinearLayout(getActivity().getApplicationContext());
 
-            EditText quantite = new EditText(this);
+            EditText quantite = new EditText(getActivity().getApplicationContext());
             quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+            quantite.setHint("Quantité");
+            quantite.setTextColor(Color.parseColor("#FFFFFF"));
+            quantite.setHintTextColor(Color.parseColor("#FFFFFF"));
 
-            CheckBox checkBox = new CheckBox(this);
+            CheckBox checkBox = new CheckBox(getActivity().getApplicationContext());
+            checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -213,11 +219,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            TextView libelle = new TextView(this);
+            TextView libelle = new TextView(getActivity().getApplicationContext());
             libelle.setText(recette.getLibelleRecette());
             libelle.setTextSize(20);
+            libelle.setTextColor(Color.parseColor("#FFFFFF"));
 
-            Button buttonInfo = new Button(this);
+            Button buttonInfo = new Button(getActivity().getApplicationContext());
             buttonInfo.setText("Details");
             buttonInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -236,18 +243,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void infoRecettes(Recettes recette, List<ContenirRecettes> listContenirRecettes) {
-        AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(this);
+        AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(getContext());
         infoRecettePopup.setTitle("Information de la recette "+recette.getLibelleRecette()+" :");
 
-        TableLayout tableLayout = new TableLayout(this);
+        TableLayout tableLayout = new TableLayout(getActivity().getApplicationContext());
 
         for(ContenirRecettes contenirRecette : listContenirRecettes) {
             if(contenirRecette.getRecette().getIdRecette() == recette.getIdRecette()) {
                 Produits produit = contenirRecette.getProduit();
 
-                LinearLayout linearLayoutProduit = new LinearLayout(this);
+                LinearLayout linearLayoutProduit = new LinearLayout(getActivity().getApplicationContext());
 
-                TextView libelle = new TextView(this);
+                TextView libelle = new TextView(getActivity().getApplicationContext());
                 libelle.setText("Produit: " + produit.getLibelle() + " | Quantite: " + contenirRecette.getQuantite());
                 linearLayoutProduit.addView(libelle);
 
@@ -267,16 +274,21 @@ public class MainActivity extends AppCompatActivity {
 
     public void getProduits(Produits produit) {
         if(verifInListeProduit(produit)) {
-            TableRow tableRowProduit = new TableRow(this);
+            TableRow tableRowProduit = new TableRow(getActivity().getApplicationContext());
 
-            TextView value = new TextView(this);
+            TextView value = new TextView(getActivity().getApplicationContext());
             value.setText(produit.getLibelle());
             value.setTextSize(20);
+            value.setTextColor(Color.parseColor("#FFFFFF"));
 
-            EditText quantite = new EditText(this);
+            EditText quantite = new EditText(getActivity().getApplicationContext());
             quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+            quantite.setHint("Quantité");
+            quantite.setTextColor(Color.parseColor("#FFFFFF"));
+            quantite.setHintTextColor(Color.parseColor("#FFFFFF"));
 
-            CheckBox checkBox = new CheckBox(this);
+            CheckBox checkBox = new CheckBox(getActivity().getApplicationContext());
+            checkBox.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
             checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -301,50 +313,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void getMenuSwitch() {
-
-        /*
-        buttonMain = findViewById(R.id.buttonMain);
-        buttonMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(FirstActivity.this, SecondActivity.class);
-                startActivity(monIntent);
-            }
-        });
-        */
-
-        buttonProduits = findViewById(R.id.buttonProduits);
-        buttonProduits.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(MainActivity.this, ProduitsActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-        buttonRecettes = findViewById(R.id.buttonRecettes);
-        buttonRecettes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(MainActivity.this, RecettesActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-        buttonListe = findViewById(R.id.buttonListe);
-        buttonListe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(MainActivity.this, ListeActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-    }
-
     public void addProduitCheck(int idProduit, int quantite) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
 
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
@@ -375,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void addRecetteCheck(int idRecette, int quantite) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Recettes, Integer> daoRecettes = linker.getDao(Recettes.class);
             Dao<Listes, Integer> daoListes = linker.getDao(Listes.class);

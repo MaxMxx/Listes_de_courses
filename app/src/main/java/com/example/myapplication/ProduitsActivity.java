@@ -2,14 +2,18 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import android.app.Fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableLayout;
@@ -24,36 +28,28 @@ import com.j256.ormlite.dao.Dao;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ProduitsActivity extends AppCompatActivity {
+public class ProduitsActivity extends Fragment {
 
     private static final String TAG = "ProduitsActivity";
     private TableLayout produitsTableLayout;
-
     private EditText editTextSearch;
-
-    private Button buttonMain;
-    private Button buttonProduits;
-    private Button buttonRecettes;
-    private Button buttonListe;
-
     private Button buttonCreateProduit;
 
+    private View view;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.produits_main);
-        produitsTableLayout = findViewById(R.id.produitsTableLayout);
-        getSupportActionBar().hide();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.produits_main, container, false);
+        produitsTableLayout = view.findViewById(R.id.produitsTableLayout);
 
         buttonCreate();
-
-        getMenuSwitch();
-
         getEditSearch();
+
+        return view;
     }
 
     public void buttonCreate() {
-        buttonCreateProduit = findViewById(R.id.buttonCreateProduit);
+        buttonCreateProduit = view.findViewById(R.id.buttonCreateProduit);
         buttonCreateProduit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,25 +59,28 @@ public class ProduitsActivity extends AppCompatActivity {
     }
 
     public void getPopupCreate() {
-        AlertDialog.Builder createPopup = new AlertDialog.Builder(this);
+        AlertDialog.Builder createPopup = new AlertDialog.Builder(getContext());
         createPopup.setTitle("Voulez-vous créer un produit ?");
 
         //TableLayout EDIT
 
-        TableLayout tableLayout = new TableLayout(this);
+        TableLayout tableLayout = new TableLayout(getActivity().getApplicationContext());
 
         // MODIFICATION LIBELLE PRODUIT
 
-        TableRow tableRowLibelle = new TableRow(this);
+        TableRow tableRowLibelle = new TableRow(getActivity().getApplicationContext());
 
-        TextView infoLibelle = new TextView(this);
+        TextView infoLibelle = new TextView(getActivity().getApplicationContext());
         infoLibelle.setText("Nom: ");
         infoLibelle.setTextSize(18);
+        infoLibelle.setTextColor(Color.parseColor("#FFFFFF"));
         tableRowLibelle.addView(infoLibelle);
 
-        EditText createLibelle = new EditText(this);
+        EditText createLibelle = new EditText(getActivity().getApplicationContext());
         createLibelle.setTextSize(18);
         createLibelle.setHint("Nom de votre produit");
+        createLibelle.setTextColor(Color.parseColor("#FFFFFF"));
+        createLibelle.setHintTextColor(Color.parseColor("#FFFFFF"));
         tableRowLibelle.addView(createLibelle);
 
         tableLayout.addView(tableRowLibelle);
@@ -105,7 +104,7 @@ public class ProduitsActivity extends AppCompatActivity {
     }
 
     public void createProduit(String libelle) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
 
@@ -126,58 +125,17 @@ public class ProduitsActivity extends AppCompatActivity {
         getEditSearch();
     }
 
-    public void getMenuSwitch() {
-        buttonMain = findViewById(R.id.buttonMain);
-        buttonMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(ProduitsActivity.this, MainActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-        /*
-        buttonProduits = findViewById(R.id.buttonProduits);
-        buttonProduits.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(ProduitsActivity.this, ProduitsActivity.class);
-                startActivity(monIntent);
-            }
-        });
-        */
-
-        buttonRecettes = findViewById(R.id.buttonRecettes);
-        buttonRecettes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(ProduitsActivity.this, RecettesActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-        buttonListe = findViewById(R.id.buttonListe);
-        buttonListe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(ProduitsActivity.this, ListeActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-    }
-
     public void getProduits(Produits produit) {
-        TableRow tableRowProduit = new TableRow(this);
+        TableRow tableRowProduit = new TableRow(getActivity().getApplicationContext());
 
-        TextView value = new TextView(this);
+        TextView value = new TextView(getActivity().getApplicationContext());
         value.setText(produit.getLibelle());
-
+        value.setTextColor(Color.parseColor("#FFFFFF"));
         tableRowProduit.addView(value);
 
         int idProduit = produit.getIdProduit();
 
-        Button deleteProduit = new Button(this);
+        Button deleteProduit = new Button(getActivity().getApplicationContext());
         deleteProduit.setText("SUPPRIMER");
         deleteProduit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,7 +146,7 @@ public class ProduitsActivity extends AppCompatActivity {
 
         tableRowProduit.addView(deleteProduit);
 
-        Button editProduit = new Button(this);
+        Button editProduit = new Button(getActivity().getApplicationContext());
         editProduit.setText("MODIFIER");
         editProduit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,7 +161,7 @@ public class ProduitsActivity extends AppCompatActivity {
     }
 
     public void getEditSearch() {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
 
@@ -213,7 +171,7 @@ public class ProduitsActivity extends AppCompatActivity {
                 getProduits(produit);
             }
 
-            editTextSearch = findViewById(R.id.editTextSearch);
+            editTextSearch = view.findViewById(R.id.editTextSearch);
 
             editTextSearch.addTextChangedListener(new TextWatcher() {
                 public void afterTextChanged(Editable s) {
@@ -244,7 +202,7 @@ public class ProduitsActivity extends AppCompatActivity {
     }
 
     public void editProduit(int idProduit, TableRow tableRowProduit) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
 
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
@@ -252,23 +210,26 @@ public class ProduitsActivity extends AppCompatActivity {
             Produits produit = daoProduits.queryForId(idProduit);
 
             if (produit != null) {
-                AlertDialog.Builder editPopup = new AlertDialog.Builder(this);
+                AlertDialog.Builder editPopup = new AlertDialog.Builder(getContext());
                 editPopup.setTitle("Voulez vous modifier "+produit.getLibelle()+" ?");
 
                 //TableLayout EDIT
 
-                TableLayout tableLayout = new TableLayout(this);
+                TableLayout tableLayout = new TableLayout(getActivity().getApplicationContext());
 
                 // MODIFICATION LIBELLE PRODUIT
 
-                TableRow tableRowLibelle = new TableRow(this);
+                TableRow tableRowLibelle = new TableRow(getActivity().getApplicationContext());
 
-                TextView infoLibelle = new TextView(this);
+                TextView infoLibelle = new TextView(getActivity().getApplicationContext());
                 infoLibelle.setText("Libelle: ");
+                infoLibelle.setTextColor(Color.parseColor("#FFFFFF"));
                 tableRowLibelle.addView(infoLibelle);
 
-                EditText changeLibelle = new EditText(this);
+                EditText changeLibelle = new EditText(getActivity().getApplicationContext());
                 changeLibelle.setText(produit.getLibelle());
+                changeLibelle.setTextColor(Color.parseColor("#FFFFFF"));
+                changeLibelle.setHintTextColor(Color.parseColor("#FFFFFF"));
                 tableRowLibelle.addView(changeLibelle);
 
                 tableLayout.addView(tableRowLibelle);
@@ -299,7 +260,7 @@ public class ProduitsActivity extends AppCompatActivity {
     }
 
     public void createProduit(int idProduit, String libelle) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
 
@@ -317,7 +278,7 @@ public class ProduitsActivity extends AppCompatActivity {
     }
 
     public void removeP(List<ContenirRecettes> listContenirRecettes, List<ListesProduits> listCoursesProduits, Produits produit, TableRow tableRowProduit) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
 
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
@@ -350,7 +311,7 @@ public class ProduitsActivity extends AppCompatActivity {
     }
 
     public void deleteProduit(int idProduit, TableRow tableRowProduit) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Produits, Integer> daoProduits = linker.getDao(Produits.class);
             Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao(ContenirRecettes.class);
@@ -361,7 +322,7 @@ public class ProduitsActivity extends AppCompatActivity {
 
             Produits produit = daoProduits.queryForId(idProduit);
             if (produit != null) {
-                AlertDialog.Builder deletePopup = new AlertDialog.Builder(this);
+                AlertDialog.Builder deletePopup = new AlertDialog.Builder(getContext());
                 deletePopup.setTitle("Etes vous sur de vouloir supprimer "+produit.getLibelle()+" ?");
                 //deletePopup.setMessage("Cliquez sur oui ou non");
                 deletePopup.setPositiveButton("Oui", new DialogInterface.OnClickListener() {

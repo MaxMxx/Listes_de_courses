@@ -3,8 +3,11 @@ package com.example.myapplication;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -12,7 +15,9 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -32,77 +37,27 @@ import com.j256.ormlite.dao.Dao;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ListeActivity extends AppCompatActivity {
+public class ListeActivity extends Fragment {
 
     private static final String TAG = "ListeActivity";
     private TableLayout containerListe;
     private Button buttonSupprimerListe;
 
-    private Button buttonMain;
-    private Button buttonProduits;
-    private Button buttonRecettes;
-    private Button buttonListe;
+    private View view;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.liste);
-        getSupportActionBar().hide();
-
-        containerListe = findViewById(R.id.container_liste);
-        buttonSupprimerListe = findViewById(R.id.button_supprimer_liste);
-
-        getMenuSwitch();
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.liste, container, false);
+        containerListe = view.findViewById(R.id.containerListe);
+        buttonSupprimerListe = view.findViewById(R.id.buttonSupprimerListe);
 
         getListeAll();
 
-    }
-
-    public void getMenuSwitch() {
-
-        buttonMain = findViewById(R.id.buttonMain);
-        buttonMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(ListeActivity.this, MainActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-        buttonProduits = findViewById(R.id.buttonProduits);
-        buttonProduits.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(ListeActivity.this, ProduitsActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-
-        buttonRecettes = findViewById(R.id.buttonRecettes);
-        buttonRecettes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(ListeActivity.this, RecettesActivity.class);
-                startActivity(monIntent);
-            }
-        });
-
-        /*
-        buttonListe = findViewById(R.id.buttonListe);
-        buttonListe.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent monIntent = new Intent(ListeActivity.this, ListeActivity.class);
-                startActivity(monIntent);
-            }
-        });
-        */
-
+        return view;
     }
 
     private void getListeAll(){
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesProduits, Integer> daoListesProduits = linker.getDao( ListesProduits.class );
@@ -127,9 +82,10 @@ public class ListeActivity extends AppCompatActivity {
                             for(Produits produit: listProduits) {
                                 Produits produitSelect = listesProduit.getProduit();
                                 if(produitSelect.getIdProduit() == produit.getIdProduit()) {
-                                    LinearLayout linearLayout = new LinearLayout(this);
+                                    LinearLayout linearLayout = new LinearLayout(getActivity().getApplicationContext());
 
-                                    TextView libelle = new TextView(this);
+                                    TextView libelle = new TextView(getActivity().getApplicationContext());
+                                    libelle.setTextColor(Color.parseColor("#FFFFFF"));
                                     if(listeSelect.isCart()) {
                                         libelle.setText(Html.fromHtml("<strike>"+produitSelect.getLibelle()+"</strike>"));
                                     } else {
@@ -138,9 +94,11 @@ public class ListeActivity extends AppCompatActivity {
                                     linearLayout.addView(libelle);
 
                                     if(!listeSelect.isCart()) {
-                                        EditText quantite = new EditText(this);
+                                        EditText quantite = new EditText(getActivity().getApplicationContext());
                                         quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
                                         quantite.setText(""+liste.getQuantite());
+                                        quantite.setTextColor(Color.parseColor("#FFFFFF"));
+                                        quantite.setHintTextColor(Color.parseColor("#FFFFFF"));
                                         linearLayout.addView(quantite);
 
                                         quantite.addTextChangedListener(new TextWatcher() {
@@ -164,13 +122,14 @@ public class ListeActivity extends AppCompatActivity {
                                             }
                                         });
                                     } else {
-                                        TextView quantite = new TextView(this);
+                                        TextView quantite = new TextView(getActivity().getApplicationContext());
+                                        quantite.setTextColor(Color.parseColor("#FFFFFF"));
                                         quantite.setText(" "+liste.getQuantite());
                                         linearLayout.addView(quantite);
                                     }
 
                                     if(!listeSelect.isCart()) {
-                                        Button deleteButton = new Button(this);
+                                        Button deleteButton = new Button(getActivity().getApplicationContext());
                                         deleteButton.setText("SUPPRIMER");
                                         deleteButton.setOnClickListener(new View.OnClickListener() {
                                             @Override
@@ -182,7 +141,8 @@ public class ListeActivity extends AppCompatActivity {
                                         linearLayout.addView(deleteButton);
                                     }
 
-                                    CheckBox addCart = new CheckBox(this);
+                                    CheckBox addCart = new CheckBox(getActivity().getApplicationContext());
+                                    addCart.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
                                     if(liste.isCart()) {
                                         addCart.setChecked(true);
                                     }
@@ -208,9 +168,10 @@ public class ListeActivity extends AppCompatActivity {
                         Listes listeSelect = listesRecettes.getListe();
                         if(liste.getIdListe() == listeSelect.getIdListe()) {
 
-                            LinearLayout linearLayout = new LinearLayout(this);
+                            LinearLayout linearLayout = new LinearLayout(getActivity().getApplicationContext());
 
-                            TextView libelle = new TextView(this);
+                            TextView libelle = new TextView(getActivity().getApplicationContext());
+                            libelle.setTextColor(Color.parseColor("#FFFFFF"));
                             if(listeSelect.isCart()) {
                                 libelle.setText(Html.fromHtml("<strike>"+listesRecettes.getRecette().getLibelleRecette()+"</strike>"));
                             } else {
@@ -219,9 +180,11 @@ public class ListeActivity extends AppCompatActivity {
                             linearLayout.addView(libelle);
 
                             if(!listeSelect.isCart()) {
-                                EditText quantite = new EditText(this);
+                                EditText quantite = new EditText(getActivity().getApplicationContext());
                                 quantite.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
                                 quantite.setText(""+liste.getQuantite());
+                                quantite.setTextColor(Color.parseColor("#FFFFFF"));
+                                quantite.setHintTextColor(Color.parseColor("#FFFFFF"));
                                 linearLayout.addView(quantite);
 
                                 quantite.addTextChangedListener(new TextWatcher() {
@@ -245,12 +208,13 @@ public class ListeActivity extends AppCompatActivity {
                                     }
                                 });
                             } else {
-                                TextView quantite = new TextView(this);
+                                TextView quantite = new TextView(getActivity().getApplicationContext());
+                                quantite.setTextColor(Color.parseColor("#FFFFFF"));
                                 quantite.setText(" "+liste.getQuantite());
                                 linearLayout.addView(quantite);
                             }
 
-                            Button info = new Button(this);
+                            Button info = new Button(getActivity().getApplicationContext());
                             info.setText("Info");
                             info.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -261,7 +225,7 @@ public class ListeActivity extends AppCompatActivity {
                             linearLayout.addView(info);
 
                             if(!listeSelect.isCart()) {
-                                Button deleteButton = new Button(this);
+                                Button deleteButton = new Button(getActivity().getApplicationContext());
                                 deleteButton.setText("SUPPRIMER");
                                 deleteButton.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -273,7 +237,8 @@ public class ListeActivity extends AppCompatActivity {
                                 linearLayout.addView(deleteButton);
                             }
 
-                            CheckBox addCart = new CheckBox(this);
+                            CheckBox addCart = new CheckBox(getActivity().getApplicationContext());
+                            addCart.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#FFFFFF")));
                             if(liste.isCart()) {
                                 addCart.setChecked(true);
                             }
@@ -303,9 +268,10 @@ public class ListeActivity extends AppCompatActivity {
                     }
                 });
             } else {
-                LinearLayout linearLayout = new LinearLayout(this);
-                TextView liste = new TextView(this);
+                LinearLayout linearLayout = new LinearLayout(getActivity().getApplicationContext());
+                TextView liste = new TextView(getActivity().getApplicationContext());
                 liste.setText("Votre liste est vide !");
+                liste.setTextColor(Color.parseColor("#FFFFFF"));
                 linearLayout.addView(liste);
                 containerListe.addView(linearLayout);
             }
@@ -318,7 +284,7 @@ public class ListeActivity extends AppCompatActivity {
     }
 
     public void addInCartProduit(int idListe, Produits produit) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesProduits, Integer> daoListesProduits = linker.getDao( ListesProduits.class );
@@ -341,7 +307,7 @@ public class ListeActivity extends AppCompatActivity {
     }
 
     public void removeInCartProduit(int idListe, Produits produit) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesProduits, Integer> daoListesProduits = linker.getDao( ListesProduits.class );
@@ -364,7 +330,7 @@ public class ListeActivity extends AppCompatActivity {
     }
 
     public void addInCartRecette(int idListe, Recettes recette) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesRecettes, Integer> daoListesRecettes = linker.getDao( ListesRecettes.class );
@@ -387,7 +353,7 @@ public class ListeActivity extends AppCompatActivity {
     }
 
     public void removeInCartRecette(int idListe, Recettes recette) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesRecettes, Integer> daoListesRecettes = linker.getDao( ListesRecettes.class );
@@ -410,30 +376,30 @@ public class ListeActivity extends AppCompatActivity {
     }
 
     public void viewProduitInfo(Recettes recette) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Recettes, Integer> daoRecettes = linker.getDao( Recettes.class );
             Dao<ContenirRecettes, Integer> daoContenirRecettes = linker.getDao( ContenirRecettes.class );
 
             List<ContenirRecettes> listContenirRecettes = daoContenirRecettes.queryForAll();
 
-            AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(this);
+            AlertDialog.Builder infoRecettePopup = new AlertDialog.Builder(getContext());
             infoRecettePopup.setTitle("Produits dans la recette "+recette.getLibelleRecette()+" :");
 
 
-            TableLayout tableLayout = new TableLayout(this);
+            TableLayout tableLayout = new TableLayout(getActivity().getApplicationContext());
 
             for(ContenirRecettes contenirRecette:listContenirRecettes) {
                 Log.i(TAG, "viewProduitInfo: "+contenirRecette.getRecette().getIdRecette());
                 if(recette.getIdRecette() == contenirRecette.getRecette().getIdRecette()) {
 
-                    LinearLayout linearLayout = new LinearLayout(this);
+                    LinearLayout linearLayout = new LinearLayout(getActivity().getApplicationContext());
 
                     Produits produit = contenirRecette.getProduit();
 
-                    TextView libelle = new TextView(this);
+                    TextView libelle = new TextView(getActivity().getApplicationContext());
                     libelle.setText("Libelle: "+produit.getLibelle() + " | Quantite: " + contenirRecette.getQuantite());
-
+                    libelle.setTextColor(Color.parseColor("#FFFFFF"));
                     linearLayout.addView(libelle);
                     tableLayout.addView(linearLayout);
 
@@ -457,7 +423,7 @@ public class ListeActivity extends AppCompatActivity {
     }
 
     public void deleteListe() {
-        AlertDialog.Builder deletePopup = new AlertDialog.Builder(this);
+        AlertDialog.Builder deletePopup = new AlertDialog.Builder(getContext());
         deletePopup.setTitle("Etes vous sur de vouloir supprimer la Liste ?");
 
         deletePopup.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
@@ -476,7 +442,7 @@ public class ListeActivity extends AppCompatActivity {
     }
 
     public void removeAllListe() {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesProduits, Integer> daoListesProduits = linker.getDao( ListesProduits.class );
@@ -516,7 +482,7 @@ public class ListeActivity extends AppCompatActivity {
     }
 
     public void removeProduit(Produits produit) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesProduits, Integer> daoListesProduits = linker.getDao( ListesProduits.class );
@@ -546,7 +512,7 @@ public class ListeActivity extends AppCompatActivity {
 
 
     public void removeRecette(Recettes recette) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
             Dao<ListesRecettes, Integer> daoListesRecettes = linker.getDao( ListesRecettes.class );
@@ -574,7 +540,7 @@ public class ListeActivity extends AppCompatActivity {
     }
 
     public void editQuantite(Listes listes, int quantite) {
-        DataBaseLinker linker = new DataBaseLinker(this);
+        DataBaseLinker linker = new DataBaseLinker(getActivity().getApplicationContext());
         try {
             Dao<Listes, Integer> daoListes = linker.getDao( Listes.class );
 
